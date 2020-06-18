@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/gameTheme">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline_startButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintGuide_percent="0.3" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalGuideline_startButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <Button
+        android:id="@+id/continueGameButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:fontFamily="@font/amatic_sc"
+        android:onClick="continueGame"
+        android:text="Continue Game"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/newGameButton"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_startButtons"
+        app:layout_constraintRight_toRightOf="@id/verticalGuideline_endButtons"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_startButtons" />
+
+    <Button
+        android:id="@+id/newGameButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:fontFamily="@font/amatic_sc"
+        android:onClick="newGame"
+        android:text="New Game"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tutorialButton"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_startButtons"
+        app:layout_constraintRight_toRightOf="@id/verticalGuideline_endButtons"
+        app:layout_constraintTop_toBottomOf="@id/continueGameButton"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/tutorialButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:fontFamily="@font/amatic_sc"
+        android:onClick="goToTutorial"
+        android:text="How To Play"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/settingsButton"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_startButtons"
+        app:layout_constraintRight_toRightOf="@id/verticalGuideline_endButtons"
+        app:layout_constraintTop_toBottomOf="@id/newGameButton"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/settingsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:fontFamily="@font/amatic_sc"
+        android:onClick="goToSettings"
+        android:text="Settings"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/creditsButton"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_startButtons"
+        app:layout_constraintRight_toRightOf="@id/verticalGuideline_endButtons"
+        app:layout_constraintTop_toBottomOf="@id/tutorialButton"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/creditsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttons_background"
+        android:fontFamily="@font/amatic_sc"
+        android:onClick="goToCredits"
+        android:text="Credits"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endButtons"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_startButtons"
+        app:layout_constraintRight_toRightOf="@id/verticalGuideline_endButtons"
+        app:layout_constraintTop_toBottomOf="@id/settingsButton"
+        android:layout_marginTop="5dp"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline_endButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintGuide_percent="0.8" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalGuideline_endButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintGuide_percent="0.8" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

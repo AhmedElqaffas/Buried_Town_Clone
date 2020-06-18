@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gameTheme"
+    tools:context=".GameActivity"
+    android:id="@+id/rootLayout">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:alpha="0.5"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/horizontalGuideline_endStats"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/stats_cover" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/hpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="HP"
+            android:textColor="#FF0000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/hpTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/hpTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="999"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+            app:layout_constraintLeft_toRightOf="@+id/hpLabel"
+            app:layout_constraintRight_toLeftOf="@id/hungerLabel"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hungerLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hunger"
+            android:textColor="#0E7502"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+            app:layout_constraintLeft_toRightOf="@+id/hpTextView"
+            app:layout_constraintRight_toLeftOf="@id/hungerTextView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/hungerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="999"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+            app:layout_constraintLeft_toRightOf="@+id/hungerLabel"
+            app:layout_constraintRight_toLeftOf="@id/thirstLabel"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/thirstLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Thirst"
+            android:textAlignment="viewStart"
+            android:textColor="#0F40D3"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+            app:layout_constraintLeft_toRightOf="@+id/hungerTextView"
+            app:layout_constraintRight_toLeftOf="@id/thirstTextView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/thirstTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="999"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endStats"
+            app:layout_constraintLeft_toRightOf="@+id/thirstLabel"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline_endStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <FrameLayout
+        android:id="@+id/gameMapContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endStats"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endgame"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuideline_endgame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/verticalViewPager"
+        android:orientation="vertical"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endgame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/horizontalViewPager"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="0dp"/>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/horizontalViewPager"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endgame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf= "parent"
+        app:layout_constraintLeft_toRightOf="@+id/verticalViewPager"
+        android:layout_height="0dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
