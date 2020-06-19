@@ -7,6 +7,8 @@ class Player(val context: Context) {
     private var hp: Int = 0
     private var hunger:Int = 0
     private var thirst: Int = 0
+    private var locationX = 0
+    private var locationY = 0
 
     var database: Database = Database(context)
 
@@ -50,6 +52,14 @@ class Player(val context: Context) {
             hp = value
         }
     }
+    fun setLocation(x: Int, y: Int){
+        locationX = x
+        locationY = y
+        updateLocationInDatabase()
+    }
+    private fun updateLocationInDatabase(){
+        database.updatePlayerLocation(locationX, locationY)
+    }
 
     fun getHunger(): Int{
         return hunger
@@ -59,6 +69,12 @@ class Player(val context: Context) {
     }
     fun getHealthPoints(): Int{
         return hp
+    }
+    fun getLocationX(): Int{
+        return locationX
+    }
+    fun getLocationY(): Int{
+        return locationY
     }
 
 }

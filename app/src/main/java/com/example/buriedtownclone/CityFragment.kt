@@ -1,6 +1,7 @@
 package com.example.buriedtownclone
 
 import android.app.Activity
+import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,22 +10,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [CityFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
+
+class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
 
     val buildingsProbabilities: HashMap<Int, Double> = hashMapOf(R.drawable.house to 0.4,
         R.drawable.workshop to 0.2, R.drawable.school to 0.2, R.drawable.pharmacy to 0.1,
@@ -110,6 +103,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
         for (i in 0 until layout.childCount) {
             val subView: View = layout.getChildAt(i)
             if (subView is ImageView) {
+                subView.setOnClickListener{imageViewsClickListener(subView)}
                 subView.setImageResource(buildingsImagesId[imagesFound])
                 imagesFound++
             }
@@ -170,30 +164,24 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
         var spotsDrawn: Int = 0
         for (i in 0 until layout.childCount) {
             val subView: View = layout.getChildAt(i)
-            if (subView is ImageView) {
+            if (subView is ImageView){
+                subView.setOnClickListener {imageViewsClickListener(subView)}
                 subView.setImageResource(stringToSpotImage[spotsList[spotsDrawn].spotType]!!)
                 spotsDrawn++
             }
         }
     }
-/*
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ThreeSpotsCity.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            CityFragment(City(0,0),true).apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }*/
+
+    private fun imageViewsClickListener(view: View){
+        var imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
+        var imageIndex = imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
+        goToInventoryActivity(imageIndex)
+    }
+
+    private fun goToInventoryActivity(index: Int){
+        var intent = Intent(context, InventoryActivity::class.java)
+        intent.putExtra("spot",city.spots[index])
+        this.startActivity(intent)
+    }
+
 }

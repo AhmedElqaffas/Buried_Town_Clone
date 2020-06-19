@@ -34,8 +34,6 @@ class GameActivity : AppCompatActivity() {
         initializeClassVariables()
         initializeOrLoadGameData()
         showPlayerStatsInStatsBar()
-        setupViewPagersAdapters()
-        goToHomeCity()
         setupViewPagersListeners()
         startCountingTime()
     }
@@ -53,9 +51,15 @@ class GameActivity : AppCompatActivity() {
         if(isNewGame()){
             initializeGameData()
             updatePlayerData()
+            setupViewPagersAdapters()
+            goToCity(Definitions.homeX, Definitions.homeY)
+
         }
         else{
             loadGameData()
+            setupViewPagersAdapters()
+            goToCity(player.getLocationX(),player.getLocationY())
+
         }
     }
     private fun isNewGame(): Boolean{
@@ -83,12 +87,14 @@ class GameActivity : AppCompatActivity() {
         val hp = database.getHealthPoints()!!
         val hunger = database.getHunger()
         val thirst = database.getThirst()
+        val playerLocation = database.getPlayerLocation()
         visualsUpdater.updateHealthPoints(hp)
         visualsUpdater.updateHunger(hunger)
         visualsUpdater.updateThirst(thirst)
         player.setHealthPoints(hp)
         player.setHunger(hunger)
         player.setThirst(thirst)
+        player.setLocation(playerLocation[0], playerLocation[1])
     }
 
     private fun updatePlayerData(){
@@ -131,15 +137,17 @@ class GameActivity : AppCompatActivity() {
 
     private fun navigate(){
         disableUserInteraction()
+        visualsUpdater.showWalkingPanel()
         playSound(R.raw.run)
         Handler(Looper.getMainLooper()).postDelayed(object: Runnable{
             override fun run() {
                 loadOrCreateCity()
                 enableUserInteraction()
                 stopSound()
+                visualsUpdater.hideWalkingPanel()
             }
         },1500)
-
+        updatePlayerLocation()
     }
 
     private fun loadOrCreateCity(){
@@ -193,12 +201,15 @@ class GameActivity : AppCompatActivity() {
         citiesVisitedList.add(city)
     }
 
-    private fun goToHomeCity(){
-        horizontalViewPager.setCurrentItem(floor(GameSettings.horizontalSize / 2.0).toInt(),false)
-        verticalViewPager.setCurrentItem(floor(GameSettings.horizontalSize / 2.0).toInt(),false)
+    private fun goToCity(x: Int, y: Int){
+        horizontalViewPager.setCurrentItem(gameLocationToHorizontalPagerPosition(x),false)
+        verticalViewPager.setCurrentItem(gameLocationToVerticalPagerPosition(y),false)
         loadOrCreateCity()
     }
 
+    private fun updatePlayerLocation(){
+        player.setLocation(getHorizontalGameLocation(),getVerticalGameLocation())
+    }
     // ViewPagers position are from 0:size, but we want our game to be -0.5 size : 0.5 size
     // and home would be in the middle (x-0, y=0)
     private fun getHorizontalGameLocation(): Int{
@@ -206,6 +217,14 @@ class GameActivity : AppCompatActivity() {
     }
     private fun getVerticalGameLocation(): Int{
         return verticalViewPager.currentItem - floor(GameSettings.verticalSize/2.0).toInt()
+    }
+
+    // To convert the other way around
+    private fun gameLocationToHorizontalPagerPosition(locationX: Int): Int{
+        return locationX + floor(GameSettings.horizontalSize/2.0).toInt()
+    }
+    private fun gameLocationToVerticalPagerPosition(locationY: Int): Int{
+        return locationY + floor(GameSettings.verticalSize/2.0).toInt()
     }
 
     private fun startCountingTime(){

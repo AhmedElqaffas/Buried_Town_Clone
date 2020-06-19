@@ -206,6 +206,27 @@ class Database(val context: Context){
         }
     }
 
+    fun getPlayerLocation(): MutableList<Int>{
+        var locationQueryResult: Cursor = database.rawQuery(getLocationQuery(), null)
+        return extractLocationFromQuery(locationQueryResult)
+    }
+    private fun getLocationQuery(): String{
+        return "SELECT quantity FROM stats WHERE stat = 'x_position' or stat = 'y_position'"
+    }
+    private fun extractLocationFromQuery(query: Cursor): MutableList<Int>{
+        var locationList = mutableListOf<Int>()
+        query.moveToFirst()
+        locationList.add(query.getInt(query.getColumnIndex("quantity")))
+        query.moveToNext()
+        locationList.add(query.getInt(query.getColumnIndex("quantity")))
+        return locationList
+    }
+
+    fun updatePlayerLocation(x: Int, y: Int){
+        database.execSQL("UPDATE stats SET quantity = $x WHERE stat = 'x_position'")
+        database.execSQL("UPDATE stats SET quantity = $y WHERE stat = 'y_position'")
+    }
+
     fun dropAllTables(){
         database.execSQL("DROP TABLE stats")
         database.execSQL("DROP TABLE weapons")
