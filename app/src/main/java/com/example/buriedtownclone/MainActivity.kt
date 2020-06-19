@@ -34,14 +34,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun continueGame(view: View){
-
+        goToGame(false)
     }
 
     fun newGame(view: View){
-        goToGame();
+        goToGame(true);
     }
-    private fun goToGame(){
+    private fun goToGame(newGame: Boolean){
         var intent: Intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("new game",newGame)
         startActivity(intent)
     }
 

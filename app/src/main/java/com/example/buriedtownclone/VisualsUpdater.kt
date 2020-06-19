@@ -19,4 +19,7 @@ class VisualsUpdater() {
     fun updateThirst(value: Int){
         activity.thirstTextView.text = value.toString()
     }
+    fun updateHealthPoints(value: Int){
+        activity.hpTextView.text = value.toString()
+    }
 }

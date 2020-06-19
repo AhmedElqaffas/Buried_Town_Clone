@@ -3,6 +3,7 @@ package com.example.buriedtownclone
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -114,19 +115,56 @@ class Database(val context: Context){
         database.execSQL("INSERT INTO cities values($locationX,$locationY)")
     }
 
-    fun getSpotsInCity(city: City): Cursor{
-        var spotsQuery: Cursor = database.rawQuery(getSpotsQuery(city), null)
-        println(getSpotsQuery(city))
-        return spotsQuery
-
+    fun getSpotsInCity(city: City): MutableList<Spot>{
+        var spotsQueryResult: Cursor = database.rawQuery(getSpotsQuery(city), null)
+        return formSpotsObjects(spotsQueryResult)
     }
     private fun getSpotsQuery(city: City): String{
         return "SELECT * FROM spots WHERE city_x = ${city.locationX} " +
                 "and city_y = ${city.locationY}"
     }
+    private fun formSpotsObjects(results: Cursor): MutableList<Spot>{
+        var spotsObjects: MutableList<Spot> = mutableListOf()
+        results.moveToFirst()
+        while(!results.isAfterLast){
+            spotsObjects.add(formSpot(results))
+            results.moveToNext()
+        }
+        return spotsObjects
+    }
+    private fun formSpot(query: Cursor): Spot{
+
+        var spot = Spot()
+        spot.cityX = query.getInt(query.getColumnIndex("city_x"))
+        spot.cityY = query.getInt(query.getColumnIndex("city_y"))
+        spot.locationWithinCity = query.getInt(query.getColumnIndex("index_within_city"))
+        spot.visited = query.getInt(query.getColumnIndex("visited")) == 1 // to convert int to boolean
+        spot.itemsInside = unserializeItemsMap(query)
+        spot.spotType = query.getString(query.getColumnIndex("type"))
+        return spot
+    }
+    private fun unserializeItemsMap(query: Cursor): HashMap<String, String>{
+        var itemsInsideHashMap = hashMapOf<String, String>()
+        var itemsInsideSpotText = query.getString(query.getColumnIndex("inner_items_map"))
+        try {
+            val json = JSONObject(itemsInsideSpotText)
+            val names: JSONArray = json.names()
+            for (i in 0 until names.length()) {
+                val key = names.getString(i)
+                itemsInsideHashMap[key] = json.opt(key).toString()
+            }
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        return itemsInsideHashMap
+    }
 
     fun saveSpot(spot: Spot){
-
+        val gson = Gson()
+        val isVisitedInt = if (spot.visited) 1 else 0
+        val itemsInsideText: String = gson.toJson(spot.itemsInside)
+        database.execSQL("INSERT INTO spots values(${spot.locationWithinCity}," +
+                "${spot.cityX}, ${spot.cityY},'$itemsInsideText', ${isVisitedInt}, '${spot.spotType}')")
     }
 
     fun setThirst(value: Int){
@@ -135,6 +173,37 @@ class Database(val context: Context){
 
     fun setHunger(value: Int){
         database.execSQL("UPDATE stats SET quantity = $value WHERE stat = 'hunger'")
+    }
+
+    fun getCities(): MutableList<City>{
+        var citiesQueryResult: Cursor = database.rawQuery(getCitiesQuery(), null)
+        return formCityResultsIntoObjects(citiesQueryResult)
+    }
+    private fun getCitiesQuery(): String{
+        return "SELECT * FROM cities"
+    }
+    private fun formCityResultsIntoObjects(results: Cursor): MutableList<City>{
+        var cityObjects = mutableListOf<City>()
+        results.moveToFirst()
+        while(!results.isAfterLast){
+            cityObjects.add(formCity(results))
+            results.moveToNext()
+        }
+        return cityObjects
+    }
+    private fun formCity(result: Cursor): City{
+        var locationX = result.getInt(result.getColumnIndex("x_position"))
+        var locationY = result.getInt(result.getColumnIndex("y_position"))
+        var city = City(locationX,locationY)
+        formSpotsWithinCity(city)
+        return city
+    }
+    private fun formSpotsWithinCity(city: City){
+        var spotsInCity = getSpotsInCity(city)
+        city.numberOfSpotsWithin = spotsInCity.size
+        for (spot in spotsInCity){
+            city.spots.add(spot)
+        }
     }
 
     fun dropAllTables(){

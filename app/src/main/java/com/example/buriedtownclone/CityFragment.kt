@@ -57,7 +57,6 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
 
         database = Database(activity!!)
         val inflated: View = inflateLayoutHavingNumberOfSpots(inflater, container)
-        println("City ${city.locationX .. city.locationY} has ${city.numberOfSpotsWithin} spots")
         if(isNewCity) {
             createCity(inflated)
         }
@@ -129,7 +128,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
         return spotImageToString[resource]!!
     }
     private fun createSpotObject(indexWithinCity: Int, spotType: String): Spot{
-        var spot: Spot = Spot()
+        var spot = Spot()
         spot.cityX = city.locationX
         spot.cityY = city.locationY
         spot.locationWithinCity = indexWithinCity
@@ -165,42 +164,6 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment() {
     }
     private fun getSpotsInCity(city: City): MutableList<Spot>{
         return city.spots
-    }
-
-    private fun formSpotsObjects(query: Cursor): MutableList<Spot>{
-        var spotsObjects: MutableList<Spot> = mutableListOf()
-        query.moveToFirst()
-        while(!query.isAfterLast){
-            spotsObjects.add(formSpot(query))
-            query.moveToNext()
-        }
-        return spotsObjects
-    }
-    private fun formSpot(query: Cursor): Spot{
-
-        var spot = Spot()
-        spot.cityX = query.getInt(query.getColumnIndex("city_x"))
-        spot.cityY = query.getInt(query.getColumnIndex("city_y"))
-        spot.locationWithinCity = query.getInt(query.getColumnIndex("index_within_city"))
-        spot.visited = query.getInt(query.getColumnIndex("visited")) == 1 // to convert int to boolean
-        spot.itemsInside = unserializeItemsMap(query)
-        spot.spotType = query.getString(query.getColumnIndex("type"))
-        return spot
-    }
-    private fun unserializeItemsMap(query: Cursor): HashMap<String, String>{
-        var itemsInsideHashMap = hashMapOf<String, String>()
-        var itemsInsideSpotText = query.getString(query.getColumnIndex("inner_items_map"))
-        try {
-            val json = JSONObject(itemsInsideSpotText)
-            val names: JSONArray = json.names()
-            for (i in 0 until names.length()) {
-                val key = names.getString(i)
-                itemsInsideHashMap[key] = json.opt(key).toString()
-            }
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        return itemsInsideHashMap
     }
 
     private fun loadSpots(spotsList: MutableList<Spot>, layout: ConstraintLayout){

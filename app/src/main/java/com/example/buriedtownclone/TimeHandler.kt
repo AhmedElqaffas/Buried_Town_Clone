@@ -26,9 +26,10 @@ class TimeHandler(val context: Context, val player: Player)  {
         handler.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
     }
     private fun decreaseThirst(){
-        player.thirst--
-        database.setThirst(player.thirst)
-        visualUpdater.updateThirst(player.thirst)
+        var playerThirst = (player.getThirst()) - 1
+        player.setThirst(playerThirst)
+        database.setThirst(playerThirst)
+        visualUpdater.updateThirst(playerThirst)
     }
 
     private fun decreaseHungerEveryFewSeconds(){
@@ -39,9 +40,10 @@ class TimeHandler(val context: Context, val player: Player)  {
         handler.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
     }
     private fun decreaseHunger(){
-        player.hunger--
-        database.setHunger(player.hunger)
-        visualUpdater.updateHunger(player.hunger)
+        var playerHunger = (player.getHunger()) - 1
+        player.setHunger(playerHunger)
+        database.setHunger(playerHunger)
+        visualUpdater.updateHunger(playerHunger)
 
     }
 
