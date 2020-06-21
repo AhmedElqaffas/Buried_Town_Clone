@@ -10,7 +10,7 @@ class Spot: Serializable{
     var cityX: Int = 0
     var cityY: Int = 0
     var locationWithinCity: Int = 0
-    var itemsInside: LinkedHashMap<String,String> = LinkedHashMap()
+    var itemsInside: LinkedHashMap<Item,String> = LinkedHashMap()
     var visited: Boolean = false
 
     fun visited(){
@@ -18,5 +18,15 @@ class Spot: Serializable{
         visited = true
         database.updateSpotVisit(this)
 
+    }
+
+    fun setItemQuantity(item: Item, quantity: Int){
+        updateObject(item,quantity)
+    }
+    private fun updateObject(item: Item, quantity: Int){
+        itemsInside[item] = quantity.toString()
+        if(quantity == 0){
+            // TODO: Remove entry
+        }
     }
 }

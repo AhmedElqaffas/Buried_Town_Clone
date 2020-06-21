@@ -9,12 +9,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import java.lang.Integer.parseInt
 
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class ItemsFragment(val spot: Spot) : Fragment() {
+class ItemsFragment(val type: Any) : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -34,10 +35,6 @@ class ItemsFragment(val spot: Spot) : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        for (item in spot.itemsInside){
-            println(item.key)
-        }
-
 
         var inflated = setupFragment(inflater, container)
         return inflated
@@ -45,10 +42,11 @@ class ItemsFragment(val spot: Spot) : Fragment() {
 
     private fun setupFragment(inflater: LayoutInflater, container: ViewGroup?): View{
         var inflated: GridLayout
-        if(spot is Spot){
+        if(type is Spot){
             inflated = inflater.inflate(R.layout.fragment_items, container, false) as GridLayout
             setupSlotViews(inflated)
         }
+        // else : type is Inventory
         else{
             // TODO: Implement inventory style
             throw Exception("not yet")
@@ -69,47 +67,63 @@ class ItemsFragment(val spot: Spot) : Fragment() {
     }
 
     private fun addListener(slot: TextView, slotsFound: Int){
-            slot.setOnClickListener { slotClickListener(slot, getItemToPutInThisSlot(slotsFound)) }
+            slot.setOnClickListener { slotClickListener(slot, slotsFound) }
     }
     private fun existsItemToPutInSlot(slotIndex: Int): Boolean{
-        return slotIndex < spot.itemsInside.size
+        return slotIndex < (type as Spot).itemsInside.size
     }
 
-    private fun getItemToPutInThisSlot(slotIndex: Int): MutableList<String>{
-        var key = ""; var value = ""
-        var itemNameAndQuantity: MutableList<String> = mutableListOf()
-        key = ArrayList<String>(spot.itemsInside.keys)[slotIndex]
-        value = ArrayList<String>(spot.itemsInside.values)[slotIndex]
+    /*private fun getItemToPutInThisSlot(slotIndex: Int): MutableList<String>{
+        var itemNameAndQuantity: MutableMap<Item,Int> = mutableListOf()
+        var key = getItemKey(slotIndex)
+        var value = getItemValue(slotIndex)
         itemNameAndQuantity.add(key)
         itemNameAndQuantity.add(value)
         return itemNameAndQuantity
+    }*/
+
+
+    private fun slotClickListener(view: View, slotIndex: Int){
+        addItemToInventory(view, slotIndex)
+    }
+    private fun addItemToInventory(view: View, slotIndex: Int){
+        var newQuantity = reduceItemQuantityInSpot(slotIndex)
+        updateItemQuantityTextView(view, newQuantity)
+    }
+    private fun reduceItemQuantityInSpot(slotIndex: Int): Int{
+        var newQuantity = getItemQuantity(slotIndex) - 1
+        setItemQuantity(slotIndex,newQuantity)
+        return newQuantity
+    }
+    private fun setItemQuantity(slotIndex: Int, newQuantity: Int){
+        (type as Spot).setItemQuantity(getItem(slotIndex), newQuantity)
+        //println((type as Spot).itemsInside[getItem(slotIndex)])
+        getItem(slotIndex).printTest()
     }
 
-    fun slotClickListener(view: View, item: MutableList<String>){
-        println("ITEM ${item[0]}    quantity ${item[1]}")
-    }
-
-    private fun addItemImageAndQuantity(slot: TextView, slotIndex: Int){
+    private fun addItemImageAndQuantity(slot: View, slotIndex: Int){
         addItemImage(slot, slotIndex)
         addItemQuantity(slot,slotIndex)
 
     }
-    private fun addItemImage(slot: TextView, slotIndex: Int){
-        slot.setBackgroundResource(stringToSpotImage[getItemName(slotIndex)]!!)
-    }
-    private fun getItemName(slotIndex: Int): String{
-            return getItemToPutInThisSlot(slotIndex)[0]
+    private fun addItemImage(slot: View, slotIndex: Int){
+        slot.setBackgroundResource(getItem(slotIndex).imageResource)
     }
 
-    private fun addItemQuantity(slot: TextView, slotIndex: Int){
+    private fun getItem(slotIndex: Int): Item {
+        return ArrayList<Item>((type as Spot).itemsInside.keys)[slotIndex]
+    }
+
+    private fun addItemQuantity(slot: View, slotIndex: Int){
         var quantity = getItemQuantity(slotIndex)
-        updateItemQuantity(slot,quantity)
+        updateItemQuantityTextView(slot,quantity)
     }
     private fun getItemQuantity(slotIndex: Int): Int{
-        return getItemToPutInThisSlot(slotIndex)[1].toInt()
+        var stringQuantity = ArrayList<String>((type as Spot).itemsInside.values)[slotIndex]
+        return parseInt(stringQuantity)
     }
 
-    private fun updateItemQuantity(slot: TextView, quantity: Int){
-        slot.text = quantity.toString()
+    private fun updateItemQuantityTextView(slot: View, quantity: Int){
+        (slot as TextView).text = quantity.toString()
     }
 }

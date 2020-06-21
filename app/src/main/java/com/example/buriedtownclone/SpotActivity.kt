@@ -1,7 +1,9 @@
 package com.example.buriedtownclone
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+
 
 class SpotActivity : AppCompatActivity() {
 
@@ -18,6 +20,12 @@ class SpotActivity : AppCompatActivity() {
         manageSpot()
 
         showStatsBarFragment()
+    }
+
+    override fun onBackPressed() {
+        intent.putExtra("spot", getClickedSpotObject())
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     private fun createUpdatedPlayerObject(){

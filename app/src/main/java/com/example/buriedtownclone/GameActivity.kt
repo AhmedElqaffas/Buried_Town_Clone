@@ -21,6 +21,7 @@ class GameActivity : AppCompatActivity() {
     lateinit var database: Database
     lateinit var player: Player
     var citiesVisitedList: MutableList<City> = mutableListOf()
+    lateinit var currentCity: City
     lateinit var timeHandler: TimeHandler
     lateinit var visualsUpdater: VisualsUpdater
     var gameHandler = GameHandler(this)
@@ -84,7 +85,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun refreshClassVariables(){
         database = Database(this)
-        player.updateStatsFromDatabase()//Player(this)
+        player.updateStatsFromDatabase()
         timeHandler.updateObjects(this, player)
         visualsUpdater.updateActivityContext(this)
     }
@@ -155,6 +156,11 @@ class GameActivity : AppCompatActivity() {
         disableUserInteraction()
         visualsUpdater.showWalkingPanel()
         playSound(R.raw.run)
+        waitForSomeTimeToSimulateWalking()
+        updatePlayerLocation()
+
+    }
+    private fun waitForSomeTimeToSimulateWalking(){
         Handler(Looper.getMainLooper()).postDelayed(object: Runnable{
             override fun run() {
                 loadOrCreateCity()
@@ -163,7 +169,6 @@ class GameActivity : AppCompatActivity() {
                 visualsUpdater.hideWalkingPanel()
             }
         },1500)
-        updatePlayerLocation()
     }
 
     private fun loadOrCreateCity(){
@@ -182,8 +187,9 @@ class GameActivity : AppCompatActivity() {
         return false
     }
     private fun loadCity(locationX: Int, locationY: Int){
-        var city = getVisitedCityObject(locationX,locationY)
-        loadAndShowCityFragment(city)
+        currentCity =  getVisitedCityObject(locationX,locationY)
+        loadAndShowCityFragment(currentCity)
+
     }
     private fun getVisitedCityObject(locationX: Int, locationY: Int): City{
         for(city in citiesVisitedList){
@@ -198,13 +204,13 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun createAndSaveCity(locationX: Int, locationY: Int ){
-        var city = City(locationX, locationY)
-        createAndShowCityFragment(city)
-        saveCity(city)
+        currentCity =  City(locationX, locationY)
+        createAndShowCityFragment(currentCity)
+        saveCity(currentCity)
     }
 
     private fun createAndShowCityFragment(city: City){
-        supportFragmentManager.beginTransaction().replace(R.id.gameMapContainer, CityFragment(city,true)).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.gameMapContainer, CityFragment(currentCity,true)).commit()
     }
     private fun saveCity(city: City){
         saveCityInDatabase(city.locationX, city.locationY)

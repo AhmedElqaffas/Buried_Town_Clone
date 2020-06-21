@@ -1,5 +1,6 @@
 package com.example.buriedtownclone
 
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import java.lang.Exception
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,7 +99,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
 
     private fun setImageViewsSourcesToBuildings(buildingsImagesId: MutableList<Int>,
                                                 layout: ConstraintLayout){
-        var imagesFound: Int = 0
+        var imagesFound = 0
         for (i in 0 until layout.childCount) {
             val subView: View = layout.getChildAt(i)
             if (subView is ImageView) {
@@ -129,12 +131,12 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         spot.spotType = spotType
         return spot
     }
-    private fun generateItemsInsideSpot(): LinkedHashMap<String,String>{
-        var itemsMap: LinkedHashMap<String,String> = linkedMapOf()
-        itemsMap.put("Tuna","10")
-        itemsMap.put("Apples","1")
-        itemsMap.put("Water","2")
-        itemsMap.put("9mm","7")
+    private fun generateItemsInsideSpot(): LinkedHashMap<Item,String>{
+        var itemsMap: LinkedHashMap<Item,String> = linkedMapOf()
+        itemsMap.put(Tuna(),"10")
+        itemsMap.put(Apple(),"1")
+        itemsMap.put(Water(),"2")
+        itemsMap.put(mm9(),"7")
         return itemsMap
     }
     private fun saveSpots(citySpotsList: MutableList<Spot>){
@@ -172,6 +174,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
 
     private fun imageViewsClickListener(view: View){
         goToInventoryActivity(getSpotIndex(view))
+
     }
     private fun getSpotIndex(view: View): Int{
         var imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
@@ -181,7 +184,40 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     private fun goToInventoryActivity(index: Int){
         var intent = Intent(context, SpotActivity::class.java)
         intent.putExtra("spot",city.spots[index])
-        this.startActivity(intent)
+        this.startActivityForResult(intent, 1)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        updateValuesOrThrowException(requestCode,resultCode,data)
+    }
+    private fun updateValuesOrThrowException(requestCode: Int, resultCode: Int, data: Intent?){
+        if(requestCode == 1 && resultCode == RESULT_OK){
+            updateSpotItems(data)
+        }
+        else{
+            throw Exception("cityFragment onActivityResult: Problem updating city")
+        }
+    }
+
+    /**
+     * DESCRIPTION: Since passing object to activity happens by value not by reference
+     * We have to take the changes that has happened in the spot activity and update it in the
+     * original object
+     */
+    private fun updateSpotItems(data: Intent?){
+        var spotVisited = getVisitedSpotObject(data)
+        updateCityObject(spotVisited)
+        updateSpotItemsInDatabase(spotVisited)
+    }
+    private fun getVisitedSpotObject(data: Intent?): Spot{
+        return data!!.getSerializableExtra("spot") as Spot
+    }
+    private fun updateCityObject(spotVisited: Spot){
+        city.refreshSpotItems(spotVisited)
+    }
+    private fun updateSpotItemsInDatabase(spotVisited: Spot){
+        database.updateSpotItems(spotVisited)
     }
 
 }

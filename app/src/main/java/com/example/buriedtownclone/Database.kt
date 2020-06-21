@@ -148,32 +148,58 @@ class Database(){
         spot.spotType = query.getString(query.getColumnIndex("type"))
         return spot
     }
-    private fun unserializeItemsMap(query: Cursor): LinkedHashMap<String, String>{
-        var itemsInsideHashMap = linkedMapOf<String, String>()
+    private fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
+        var itemsInsideHashMap = linkedMapOf<Item, String>()
         var itemsInsideSpotText = query.getString(query.getColumnIndex("inner_items_map"))
         try {
             val json = JSONObject(itemsInsideSpotText)
             val names: JSONArray = json.names()
             for (i in 0 until names.length()) {
                 val key = names.getString(i)
-                itemsInsideHashMap[key] = json.opt(key).toString()
+                itemsInsideHashMap.put(Class.forName(key).newInstance() as Item, json.opt(key).toString())
             }
         } catch (e: JSONException) {
             e.printStackTrace()
         }
+
         return itemsInsideHashMap
     }
 
     fun saveSpot(spot: Spot){
-        val gson = Gson()
         val isVisitedInt = if (spot.visited) 1 else 0
-        val itemsInsideText: String = gson.toJson(spot.itemsInside)
+        val itemsInsideText: String = serializeItemMap(spot.itemsInside)
         database.execSQL("INSERT INTO spots values(${spot.locationWithinCity}," +
                 "${spot.cityX}, ${spot.cityY},'$itemsInsideText', ${isVisitedInt}, '${spot.spotType}')")
+    }
+    private fun serializeItemMap(itemMap: LinkedHashMap<Item,String>): String{
+        var serializedMap = linkedMapOf<String, String>()
+        for(entry in itemMap){
+            var serializedEntry = serializeEntry(entry)
+            serializedMap.put(serializedEntry[0], serializedEntry[1])
+        }
+        val gson = Gson()
+        return gson.toJson(serializedMap)
+    }
+    private fun serializeEntry(entry: MutableMap.MutableEntry<Item, String>):
+            Array<String> {
+        var serializedKey = serializeClassName(entry.key)
+        var quantity = entry.value
+        return arrayOf(serializedKey,quantity)
+
+
+    }
+    private fun serializeClassName(itemClass: Item): String{
+        return itemClass::class.qualifiedName!!
     }
 
     fun updateSpotVisit(spot: Spot){
         database.execSQL("UPDATE spots SET visited = 1 " +
+                "WHERE index_within_city = ${spot.locationWithinCity}" +
+                " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
+    }
+    fun updateSpotItems(spot: Spot){
+        var serializedItemsMap = serializeItemMap(spot.itemsInside)
+        database.execSQL("UPDATE spots SET inner_items_map = '${serializedItemsMap}' " +
                 "WHERE index_within_city = ${spot.locationWithinCity}" +
                 " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
     }

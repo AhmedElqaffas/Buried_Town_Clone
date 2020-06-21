@@ -8,8 +8,12 @@ class City(val locationX: Int,val locationY: Int) {
         chooseCitySpotsSize()
     }
 
-    fun chooseCitySpotsSize(){
+    private fun chooseCitySpotsSize(){
         numberOfSpotsWithin = (3..5).random();
+    }
+
+    fun refreshSpotItems(spotToUpdate:Spot){
+        spots[spotToUpdate.locationWithinCity] = spotToUpdate
     }
 
 }
