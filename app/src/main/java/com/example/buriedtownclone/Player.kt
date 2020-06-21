@@ -1,6 +1,5 @@
 package com.example.buriedtownclone
 
-import android.app.Activity
 import android.content.Context
 
 class Player(val context: Context) {
@@ -13,10 +12,6 @@ class Player(val context: Context) {
     var database: Database = Database(context)
 
     var gameHandler = GameHandler()
-
-    init{
-
-    }
 
     fun getPlayerStats(): Array<Int>{
         return arrayOf(hp,hunger,thirst)

@@ -8,10 +8,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.activity_game.*
+import kotlinx.android.synthetic.main.activity_spot.*
+import kotlinx.android.synthetic.main.fragment_stats_bar.*
 
 
 class VisualsUpdater() {
+
+    lateinit var statsBarFragment: StatsBarFragment
     companion object{
         lateinit var activity: Activity
     }
@@ -19,14 +24,16 @@ class VisualsUpdater() {
     constructor(activity: Activity) : this() {
         VisualsUpdater.activity = activity
     }
-    fun updateHunger(value: Int){
-        activity.hungerTextView.text = value.toString()
+
+    private fun getStatsBarFragment(){
+        val fragmentActivity: FragmentActivity = activity as FragmentActivity
+        statsBarFragment = fragmentActivity.supportFragmentManager.
+        findFragmentByTag("stats bar") as StatsBarFragment
     }
-    fun updateThirst(value: Int){
-        activity.thirstTextView.text = value.toString()
-    }
-    fun updateHealthPoints(value: Int){
-        activity.hpTextView.text = value.toString()
+
+    fun showStatsInStatsBar(player: Player){
+        getStatsBarFragment()
+        statsBarFragment.updateStats(player)
     }
 
     fun showWalkingPanel(){
@@ -35,5 +42,10 @@ class VisualsUpdater() {
     fun hideWalkingPanel(){
         activity.walkingPanel.visibility = View.GONE
     }
+
+    fun updateActivityContext(activity: Activity){
+        VisualsUpdater.activity = activity
+    }
+
 
 }

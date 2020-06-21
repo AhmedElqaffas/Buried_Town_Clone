@@ -4,14 +4,21 @@ import android.content.Context
 import android.os.Handler
 
 
-class TimeHandler(val context: Context, val player: Player)  {
+class TimeHandler()  {
     var handler = Handler()
     lateinit var thirstDecrease: Runnable
     lateinit var hungerDecrease: Runnable
-
-    var database = Database(context)
+    lateinit var context: Context
+    lateinit var player: Player
+    lateinit var database: Database
 
     var visualUpdater = VisualsUpdater()
+
+    constructor(context: Context, player: Player): this(){
+        this.context = context
+        this.player = player
+        database = Database(context)
+    }
 
     fun startTimer(){
         decreaseThirstEveryFewSeconds()
@@ -29,7 +36,7 @@ class TimeHandler(val context: Context, val player: Player)  {
         var playerThirst = (player.getThirst()) - 1
         player.setThirst(playerThirst)
         database.setThirst(playerThirst)
-        visualUpdater.updateThirst(playerThirst)
+        visualUpdater.showStatsInStatsBar(player)
     }
 
     private fun decreaseHungerEveryFewSeconds(){
@@ -43,13 +50,18 @@ class TimeHandler(val context: Context, val player: Player)  {
         var playerHunger = (player.getHunger()) - 1
         player.setHunger(playerHunger)
         database.setHunger(playerHunger)
-        visualUpdater.updateHunger(playerHunger)
-
+        visualUpdater.showStatsInStatsBar(player)
     }
 
     fun stopTimer(){
         handler.removeCallbacks(thirstDecrease)
         handler.removeCallbacks(hungerDecrease)
+        handler = Handler()
+    }
+
+    fun updateObjects(context: Context, player: Player){
+        this.player = player
+        this.context = context
     }
 
 }

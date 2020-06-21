@@ -10,6 +10,13 @@ class Spot: Serializable{
     var cityX: Int = 0
     var cityY: Int = 0
     var locationWithinCity: Int = 0
-    var itemsInside: HashMap<String,String> = HashMap()
+    var itemsInside: LinkedHashMap<String,String> = LinkedHashMap()
     var visited: Boolean = false
+
+    fun visited(){
+        var database = Database()
+        visited = true
+        database.updateSpotVisit(this)
+
+    }
 }

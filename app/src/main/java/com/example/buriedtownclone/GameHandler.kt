@@ -2,6 +2,7 @@ package com.example.buriedtownclone
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 
 class GameHandler() {
     companion object{
@@ -16,6 +17,11 @@ class GameHandler() {
 
     fun endGame(){
         database.deleteAllData()
-        (context as Activity).finish()
+        goToMainMenu()
+    }
+    private fun goToMainMenu(){
+        var intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        context.startActivity(intent)
     }
 }

@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
         database.initializeDatabase()
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
         showOrHideContinueGameButton()
     }
 

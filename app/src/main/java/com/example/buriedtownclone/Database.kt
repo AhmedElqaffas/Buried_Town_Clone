@@ -9,10 +9,15 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class Database(val context: Context){
+class Database(){
 
     companion object{
-       lateinit  var database: SQLiteDatabase
+        lateinit var context: Context
+        lateinit  var database: SQLiteDatabase
+    }
+
+    constructor(context: Context): this(){
+        Database.context = context
     }
 
     fun initializeDatabase(){
@@ -143,8 +148,8 @@ class Database(val context: Context){
         spot.spotType = query.getString(query.getColumnIndex("type"))
         return spot
     }
-    private fun unserializeItemsMap(query: Cursor): HashMap<String, String>{
-        var itemsInsideHashMap = hashMapOf<String, String>()
+    private fun unserializeItemsMap(query: Cursor): LinkedHashMap<String, String>{
+        var itemsInsideHashMap = linkedMapOf<String, String>()
         var itemsInsideSpotText = query.getString(query.getColumnIndex("inner_items_map"))
         try {
             val json = JSONObject(itemsInsideSpotText)
@@ -165,6 +170,12 @@ class Database(val context: Context){
         val itemsInsideText: String = gson.toJson(spot.itemsInside)
         database.execSQL("INSERT INTO spots values(${spot.locationWithinCity}," +
                 "${spot.cityX}, ${spot.cityY},'$itemsInsideText', ${isVisitedInt}, '${spot.spotType}')")
+    }
+
+    fun updateSpotVisit(spot: Spot){
+        database.execSQL("UPDATE spots SET visited = 1 " +
+                "WHERE index_within_city = ${spot.locationWithinCity}" +
+                " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
     }
 
     fun setThirst(value: Int){

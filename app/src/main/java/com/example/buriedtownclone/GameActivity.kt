@@ -22,7 +22,7 @@ class GameActivity : AppCompatActivity() {
     lateinit var player: Player
     var citiesVisitedList: MutableList<City> = mutableListOf()
     lateinit var timeHandler: TimeHandler
-    var visualsUpdater = VisualsUpdater(this)
+    lateinit var visualsUpdater: VisualsUpdater
     var gameHandler = GameHandler(this)
     var handler= Handler()
     var mediaPlayer = MediaPlayer()
@@ -33,18 +33,21 @@ class GameActivity : AppCompatActivity() {
 
         initializeClassVariables()
         initializeOrLoadGameData()
-        showPlayerStatsInStatsBar()
         setupViewPagersListeners()
         startCountingTime()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onBackPressed() {
+        super.onBackPressed()
         timeHandler.stopTimer()
     }
-    override fun onRestart() {
-        super.onRestart()
-        timeHandler.startTimer()
+
+
+    override fun onResume() {
+        super.onResume()
+        refreshClassVariables()
+        updatePlayerData()
+        showPlayerStatsInStatsBar()
     }
 
     private fun initializeOrLoadGameData(){
@@ -76,6 +79,14 @@ class GameActivity : AppCompatActivity() {
         database = Database(this)
         player = Player(this)
         timeHandler = TimeHandler(this,player)
+        visualsUpdater = VisualsUpdater(this)
+    }
+
+    private fun refreshClassVariables(){
+        database = Database(this)
+        player.updateStatsFromDatabase()//Player(this)
+        timeHandler.updateObjects(this, player)
+        visualsUpdater.updateActivityContext(this)
     }
 
     private fun loadGameData(){
@@ -88,9 +99,6 @@ class GameActivity : AppCompatActivity() {
         val hunger = database.getHunger()
         val thirst = database.getThirst()
         val playerLocation = database.getPlayerLocation()
-        visualsUpdater.updateHealthPoints(hp)
-        visualsUpdater.updateHunger(hunger)
-        visualsUpdater.updateThirst(thirst)
         player.setHealthPoints(hp)
         player.setHunger(hunger)
         player.setThirst(thirst)
@@ -110,10 +118,18 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun showPlayerStatsInStatsBar(){
-        var statsArray = player.getPlayerStats()
-        hpTextView.text = statsArray[0].toString()
-        hungerTextView.text = statsArray[1].toString()
-        thirstTextView.text = statsArray[2].toString()
+        showStatsBarFragment()
+        // The delay is to make sure fragment is ready
+        handler.postDelayed({
+            showStats()
+        }, 10)
+    }
+    private fun showStatsBarFragment(){
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+            .commit()
+    }
+    private fun showStats(){
+        visualsUpdater.showStatsInStatsBar(player)
     }
 
     private fun setupViewPagersAdapters(){

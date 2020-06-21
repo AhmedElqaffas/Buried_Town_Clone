@@ -1,8 +1,6 @@
 package com.example.buriedtownclone
 
-import android.app.Activity
 import android.content.Intent
-import android.database.Cursor
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -131,8 +129,8 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         spot.spotType = spotType
         return spot
     }
-    private fun generateItemsInsideSpot(): HashMap<String,String>{
-        var itemsMap: HashMap<String,String> = hashMapOf()
+    private fun generateItemsInsideSpot(): LinkedHashMap<String,String>{
+        var itemsMap: LinkedHashMap<String,String> = linkedMapOf()
         itemsMap.put("Tuna","10")
         itemsMap.put("Apples","1")
         itemsMap.put("Water","2")
@@ -173,13 +171,15 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun imageViewsClickListener(view: View){
+        goToInventoryActivity(getSpotIndex(view))
+    }
+    private fun getSpotIndex(view: View): Int{
         var imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
-        var imageIndex = imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
-        goToInventoryActivity(imageIndex)
+        return imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
     }
 
     private fun goToInventoryActivity(index: Int){
-        var intent = Intent(context, InventoryActivity::class.java)
+        var intent = Intent(context, SpotActivity::class.java)
         intent.putExtra("spot",city.spots[index])
         this.startActivity(intent)
     }

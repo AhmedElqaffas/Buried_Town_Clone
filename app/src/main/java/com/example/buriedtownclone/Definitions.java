@@ -10,4 +10,10 @@ public final class Definitions {
     static String workshop = "workshop";
     static int homeX = 0;
     static int homeY = 0;
+    static String spotItems = "spot";
+    static String inventoryItems = "inventory";
+    static String mm9 = "9mm";
+    static String apples = "Apples";
+    static String water = "Water";
+    static String tuna = "Tuna";
 }
