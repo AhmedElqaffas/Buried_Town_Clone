@@ -24,6 +24,7 @@ class SpotActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         intent.putExtra("spot", getClickedSpotObject())
+        intent.putExtra("inventory", player.getInventory())
         setResult(RESULT_OK, intent)
         finish()
     }
@@ -35,7 +36,8 @@ class SpotActivity : AppCompatActivity() {
 
     private fun manageSpot(){
         var currentSpot = getClickedSpotObject()
-        showItemsFragment(currentSpot)
+        showSpotItemsFragment(currentSpot)
+        showInventoryFragment(player.getInventory())
 
         setSpotAsVisited(currentSpot)
     }
@@ -44,9 +46,14 @@ class SpotActivity : AppCompatActivity() {
         return intent.getSerializableExtra("spot") as Spot
     }
 
-    private fun showItemsFragment(spot: Spot){
-        supportFragmentManager.beginTransaction().replace(R.id.itemsContainer,
-            ItemsFragment(spot), Definitions.spotItems)
+    private fun showSpotItemsFragment(container: ItemsContainer){
+        supportFragmentManager.beginTransaction().replace(R.id.spotItemsContainer,
+            ItemsFragment(container), container::class.java.simpleName.toLowerCase())
+            .commit()
+    }
+    private fun showInventoryFragment(container: ItemsContainer){
+        supportFragmentManager.beginTransaction().replace(R.id.inventoryContainer,
+            ItemsFragment(container), container::class.java.simpleName.toLowerCase())
             .commit()
     }
 

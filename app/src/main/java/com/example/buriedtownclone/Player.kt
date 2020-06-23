@@ -8,6 +8,7 @@ class Player(val context: Context) {
     private var thirst: Int = 0
     private var locationX = 0
     private var locationY = 0
+    private var inventory: Inventory = Inventory()
 
     var database: Database = Database(context)
 
@@ -70,6 +71,9 @@ class Player(val context: Context) {
     }
     fun getLocationY(): Int{
         return locationY
+    }
+    fun getInventory(): Inventory{
+        return inventory
     }
 
 }

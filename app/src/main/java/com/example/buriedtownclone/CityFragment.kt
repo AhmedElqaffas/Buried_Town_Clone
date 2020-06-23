@@ -194,6 +194,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     private fun updateValuesOrThrowException(requestCode: Int, resultCode: Int, data: Intent?){
         if(requestCode == 1 && resultCode == RESULT_OK){
             updateSpotItems(data)
+            updatePlayerInventory(data)
         }
         else{
             throw Exception("cityFragment onActivityResult: Problem updating city")
@@ -218,6 +219,17 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
     private fun updateSpotItemsInDatabase(spotVisited: Spot){
         database.updateSpotItems(spotVisited)
+    }
+
+    private fun updatePlayerInventory(data: Intent?){
+        var inventoryObject = getUpdatedInventoryObject(data)
+        updateInventoryInDatabase(inventoryObject)
+    }
+    private fun getUpdatedInventoryObject(data: Intent?): Inventory{
+        return data!!.getSerializableExtra("inventory") as Inventory
+    }
+    private fun updateInventoryInDatabase(inventory: Inventory){
+        database.setInventory(inventory)
     }
 
 }

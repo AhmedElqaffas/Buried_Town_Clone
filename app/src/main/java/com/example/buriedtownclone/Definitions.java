@@ -16,4 +16,5 @@ public final class Definitions {
     static String apples = "Apples";
     static String water = "Water";
     static String tuna = "Tuna";
+    static int numberOfSlotsInSpot = 10;
 }

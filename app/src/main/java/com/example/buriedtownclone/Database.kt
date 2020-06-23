@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Exception
 
 
 class Database(){
@@ -38,7 +39,7 @@ class Database(){
     }
     private fun createStatsTable(){
         database.execSQL("CREATE TABLE IF NOT EXISTS stats(stat VARCHAR(50), " +
-                "quantity TINYINT UNSIGNED, CONSTRAINT pk PRIMARY KEY (stat))")
+                "quantity Text, CONSTRAINT pk PRIMARY KEY (stat))")
     }
     private fun createWeaponsTable(){
         database.execSQL("CREATE TABLE IF NOT EXISTS weapons(weapon_name VARCHAR(100), " +
@@ -82,11 +83,12 @@ class Database(){
     }
 
     fun initializeStats(){
-        database.execSQL("INSERT INTO stats values('hp',100)" )
-        database.execSQL("INSERT INTO stats values('hunger',100)")
-        database.execSQL("INSERT INTO stats values('thirst',100)")
-        database.execSQL("INSERT INTO stats values('x_position',0)")
-        database.execSQL("INSERT INTO stats values('y_position',0)")
+        database.execSQL("INSERT INTO stats values('hp','100')" )
+        database.execSQL("INSERT INTO stats values('hunger','100')")
+        database.execSQL("INSERT INTO stats values('thirst','100')")
+        database.execSQL("INSERT INTO stats values('x_position','0')")
+        database.execSQL("INSERT INTO stats values('y_position','0')")
+        database.execSQL("Insert Into stats values('inventory','')")
     }
 
     fun getHealthPoints(): Int?{
@@ -96,7 +98,7 @@ class Database(){
             null
         } else {
             // Note that foundResults already executed the .moveToFirst()
-            healthPointsQuery.getInt(0)
+            healthPointsQuery.getString(0).toInt()
         }
     }
     private fun foundResults(query: Cursor): Boolean{
@@ -107,13 +109,13 @@ class Database(){
         var hungerQuery: Cursor = database.rawQuery(getQuantityQuery
             ("stats","hunger","stat"), null)
             hungerQuery.moveToFirst()
-            return hungerQuery.getInt(0)
+            return hungerQuery.getString(0).toInt()
     }
     fun getThirst(): Int{
         var thirstQuery: Cursor = database.rawQuery(getQuantityQuery
             ("stats","thirst","stat"), null)
         thirstQuery.moveToFirst()
-        return thirstQuery.getInt(0)
+        return thirstQuery.getString(0).toInt()
     }
 
     fun saveCity(locationX: Int, locationY: Int){
@@ -158,11 +160,12 @@ class Database(){
                 val key = names.getString(i)
                 itemsInsideHashMap.put(Class.forName(key).newInstance() as Item, json.opt(key).toString())
             }
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        } catch (e: Exception) {
+            return itemsInsideHashMap
         }
 
         return itemsInsideHashMap
+
     }
 
     fun saveSpot(spot: Spot){
@@ -205,11 +208,15 @@ class Database(){
     }
 
     fun setThirst(value: Int){
-        database.execSQL("UPDATE stats SET quantity = $value WHERE stat = 'thirst'")
+        database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'thirst'")
     }
 
     fun setHunger(value: Int){
-        database.execSQL("UPDATE stats SET quantity = $value WHERE stat = 'hunger'")
+        database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'hunger'")
+    }
+    fun setInventory(inventory: Inventory){
+        var serializedInventory = serializeItemMap(inventory.itemsInside)
+        database.execSQL("UPDATE stats SET quantity = '$serializedInventory' WHERE stat = 'inventory'")
     }
 
     fun getCities(): MutableList<City>{
@@ -253,15 +260,15 @@ class Database(){
     private fun extractLocationFromQuery(query: Cursor): MutableList<Int>{
         var locationList = mutableListOf<Int>()
         query.moveToFirst()
-        locationList.add(query.getInt(query.getColumnIndex("quantity")))
+        locationList.add(query.getString(query.getColumnIndex("quantity")).toInt())
         query.moveToNext()
-        locationList.add(query.getInt(query.getColumnIndex("quantity")))
+        locationList.add(query.getString(query.getColumnIndex("quantity")).toInt())
         return locationList
     }
 
     fun updatePlayerLocation(x: Int, y: Int){
-        database.execSQL("UPDATE stats SET quantity = $x WHERE stat = 'x_position'")
-        database.execSQL("UPDATE stats SET quantity = $y WHERE stat = 'y_position'")
+        database.execSQL("UPDATE stats SET quantity = '$x' WHERE stat = 'x_position'")
+        database.execSQL("UPDATE stats SET quantity = '$y' WHERE stat = 'y_position'")
     }
 
     fun dropAllTables(){
