@@ -33,9 +33,8 @@ class TimeHandler()  {
         handler.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
     }
     private fun decreaseThirst(){
-        var playerThirst = (player.getThirst()) - 1
-        player.setThirst(playerThirst)
-        database.setThirst(playerThirst)
+        player.updateStatsFromDatabase()
+        player.updateThirst(-1)
         visualUpdater.showStatsInStatsBar(player)
     }
 
@@ -47,9 +46,8 @@ class TimeHandler()  {
         handler.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
     }
     private fun decreaseHunger(){
-        var playerHunger = (player.getHunger()) - 1
-        player.setHunger(playerHunger)
-        database.setHunger(playerHunger)
+        player.updateStatsFromDatabase()
+        player.updateHunger(-1)
         visualUpdater.showStatsInStatsBar(player)
     }
 

@@ -1,8 +1,10 @@
 package com.example.buriedtownclone
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -10,10 +12,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.TextView
+import androidx.core.os.postDelayed
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.google.android.material.resources.TextAppearance
-import org.w3c.dom.Text
+import kotlinx.android.synthetic.main.fragment_items.*
 import java.lang.Integer.parseInt
 
 
@@ -25,8 +27,8 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var parentActivityContext: Context
     lateinit var inflated: GridLayout
+    var itemActionDecider : ItemActionDecider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +38,19 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         }
     }
 
+    interface ItemActionDecider{
+        fun onItemClicked(item: Item, slotsFound: Int, itemsFragment: ItemsFragment){
+        }
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        parentActivityContext = context
+        itemActionDecider = context as ItemActionDecider
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        itemActionDecider = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -52,10 +64,17 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
 
          inflated = inflater.inflate(R.layout.fragment_items, container, false)
                 as GridLayout
+
+        renameFragmentTitle()
         drawSlots()
         setupSlotViews()
 
         return inflated
+    }
+
+    private fun renameFragmentTitle(){
+        var titleTextView = inflated.findViewById<TextView>(R.id.fragmentTitle)
+        titleTextView.text = itemContainerType::class.simpleName +" items"
     }
 
     private fun drawSlots(){
@@ -95,10 +114,9 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
 
     private fun setupSlotViews(){
-        println("SetupSlotView Called")
         var slotsFound = 0
         for(slot in inflated.children){
-            if(existsItemToPutInSlot(slotsFound) ){
+            if(existsItemToPutInSlot(slotsFound) && slot.id != R.id.fragmentTitle){
                 addListener(slot as TextView, slotsFound)
                 addItemImageAndQuantity(slot, slotsFound)
                 slotsFound++
@@ -110,16 +128,31 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
 
     private fun addListener(slot: TextView, slotsFound: Int){
-            slot.setOnClickListener { slotClickListener(slot, slotsFound) }
+        slot.setOnClickListener { itemActionDecider!!.onItemClicked(getItem(slotsFound), slotsFound, this) }
     }
 
-    private fun slotClickListener(view: View, slotIndex: Int){
-        addItemToInventory(view, slotIndex)
+    fun consumeItem(item: Item, slotIndex: Int, player: Player){
+        if(item.isConsumable()){
+            reduceItemQuantity(slotIndex)
+            player.updateStatsFromDatabase()
+            item.activateItemEffect(player)
+        }
     }
-    private fun addItemToInventory(view: View, slotIndex: Int){
-        reduceItemQuantityInSpot(slotIndex)
+
+    fun addItem(item: Item): Boolean{
+        var itemAdded = itemContainerType.addItem(item)
+        if(itemAdded){
+            refreshLayout()
+            return true
+        }
+        return false
     }
-    private fun reduceItemQuantityInSpot(slotIndex: Int){
+
+    fun removeItem(slotIndex: Int){
+        reduceItemQuantity(slotIndex)
+    }
+
+    private fun reduceItemQuantity(slotIndex: Int){
         var newQuantity = getItemQuantity(slotIndex) - 1
         setItemQuantity(slotIndex,newQuantity)
         updateItemQuantityTextView(slotIndex, newQuantity)
@@ -129,9 +162,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         itemContainerType.setItemQuantity(getItem(slotIndex), newQuantity)
     }
     private fun refreshLayoutIfItemIsFinished(newQuantity: Int){
-        println("$newQuantity in refreshLayoutIfItemFinished")
         if(newQuantity == 0){
-            println("refreshCalled")
             refreshLayout()
         }
     }
@@ -141,10 +172,11 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
     private fun resetSlots(){
         for(slot in inflated.children){
-            (slot as TextView).text = ""
-            slot.setBackgroundResource(0)
-            slot.setOnClickListener{}
-            slot.removeCallbacks {  }
+            if(slot.id != R.id.fragmentTitle){
+                (slot as TextView).text = ""
+                slot.setBackgroundResource(0)
+                slot.setOnClickListener{}
+            }
         }
     }
 
@@ -171,7 +203,11 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
 
     private fun updateItemQuantityTextView(slotIndex: Int, quantity: Int){
-        var slotView = inflated.getChildAt(slotIndex) as TextView
+        var slotView = inflated.getChildAt(slotIndex + 1) as TextView
         slotView.text = quantity.toString()
+    }
+
+    fun getItemsMap(): LinkedHashMap<Item,String>{
+        return itemContainerType.itemsInside
     }
 }

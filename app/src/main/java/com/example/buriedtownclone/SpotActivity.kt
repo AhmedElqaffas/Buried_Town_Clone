@@ -1,14 +1,19 @@
 package com.example.buriedtownclone
 
-import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 
-class SpotActivity : AppCompatActivity() {
+class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
 
+    private var database = Database(this)
     lateinit var player: Player
-    var visualsUpdater = VisualsUpdater(this)
+    var visualsUpdater =  VisualsUpdater(this)
+    lateinit var spotItemsFragment: ItemsFragment
+    lateinit var inventoryItemsFragment: ItemsFragment
+    lateinit var inventoryHelperFragment: InventoryHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -16,15 +21,19 @@ class SpotActivity : AppCompatActivity() {
         setContentView(R.layout.activity_spot)
 
         createUpdatedPlayerObject()
-
-        manageSpot()
-
         showStatsBarFragment()
+        manageSpot()
+        showInventoryHelperFragment()
+
+        var handler = Handler()
+        handler.postDelayed({
+            setupCommunicationBetweenActivityAndFragments()
+        }, 10)
+
     }
 
     override fun onBackPressed() {
         intent.putExtra("spot", getClickedSpotObject())
-        intent.putExtra("inventory", player.getInventory())
         setResult(RESULT_OK, intent)
         finish()
     }
@@ -32,6 +41,11 @@ class SpotActivity : AppCompatActivity() {
     private fun createUpdatedPlayerObject(){
         player = Player(this)
         player.updateStatsFromDatabase()
+    }
+
+    private fun showStatsBarFragment(){
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+            .commit()
     }
 
     private fun manageSpot(){
@@ -48,12 +62,12 @@ class SpotActivity : AppCompatActivity() {
 
     private fun showSpotItemsFragment(container: ItemsContainer){
         supportFragmentManager.beginTransaction().replace(R.id.spotItemsContainer,
-            ItemsFragment(container), container::class.java.simpleName.toLowerCase())
+            ItemsFragment(container), "spot")
             .commit()
     }
     private fun showInventoryFragment(container: ItemsContainer){
         supportFragmentManager.beginTransaction().replace(R.id.inventoryContainer,
-            ItemsFragment(container), container::class.java.simpleName.toLowerCase())
+            ItemsFragment(container), "inventory")
             .commit()
     }
 
@@ -61,8 +75,56 @@ class SpotActivity : AppCompatActivity() {
         spot.visited()
     }
 
-    private fun showStatsBarFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
-            .commit()
+    private fun showInventoryHelperFragment(){
+        supportFragmentManager.beginTransaction().replace(R.id.inventoryHelperContainer,
+            InventoryHelper(), "inventory helper").commit()
+    }
+
+    private fun setupCommunicationBetweenActivityAndFragments(){
+        initializeFragments()
+    }
+
+    private fun initializeFragments(){
+        spotItemsFragment = supportFragmentManager.findFragmentByTag("spot")!! as ItemsFragment
+        inventoryItemsFragment = supportFragmentManager.findFragmentByTag("inventory")!! as ItemsFragment
+        inventoryHelperFragment = supportFragmentManager.findFragmentByTag("inventory helper")!! as InventoryHelper
+
+    }
+
+    override fun onItemClicked(item: Item, slotsFound: Int, itemsFragment: ItemsFragment) {
+        if(shouldConsumeItem()){
+            if(itemsFragment.tag == "spot"){
+                spotItemsFragment.consumeItem(item,slotsFound,player)
+            }
+            else{
+                inventoryItemsFragment.consumeItem(item,slotsFound,player)
+                commitInventoryChangesToDatabase()
+            }
+            visualsUpdater.showStatsInStatsBar(player)
+        }
+        else{ // should swap item from spot to inventory and vice versa
+            if(itemsFragment.tag == "spot" && existsSlotForThisItem(inventoryItemsFragment ,item)){
+                spotItemsFragment.removeItem(slotsFound)
+                commitInventoryChangesToDatabase()
+            }
+            else{
+                if(existsSlotForThisItem(spotItemsFragment, item)){
+                    inventoryItemsFragment.removeItem(slotsFound)
+                    commitInventoryChangesToDatabase()
+                }
+            }
+        }
+    }
+
+    private fun shouldConsumeItem(): Boolean {
+        return inventoryHelperFragment.isSwitchSetToConsume()
+    }
+
+    private fun existsSlotForThisItem(container: ItemsFragment, item: Item): Boolean{
+        return container.addItem(item)
+    }
+
+    private fun commitInventoryChangesToDatabase(){
+        database.setInventory(inventoryItemsFragment.getItemsMap())
     }
 }

@@ -5,9 +5,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.google.gson.Gson
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
-import java.lang.Exception
 
 
 class Database(){
@@ -152,7 +150,7 @@ class Database(){
     }
     private fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
         var itemsInsideHashMap = linkedMapOf<Item, String>()
-        var itemsInsideSpotText = query.getString(query.getColumnIndex("inner_items_map"))
+        var itemsInsideSpotText = getItemMapString(query)
         try {
             val json = JSONObject(itemsInsideSpotText)
             val names: JSONArray = json.names()
@@ -165,6 +163,18 @@ class Database(){
         }
 
         return itemsInsideHashMap
+
+    }
+    /* If this is a stats table query, it gets the 'quantity' field
+       If this is a spots table query, it gets the 'inner_items_map' field
+     */
+    private fun getItemMapString(query: Cursor): String{
+        return if(query.getColumnIndex("quantity") != -1){
+            query.getString(query.getColumnIndex("quantity"))
+        }else{
+            query.getString(query.getColumnIndex("inner_items_map"))
+        }
+
 
     }
 
@@ -214,9 +224,25 @@ class Database(){
     fun setHunger(value: Int){
         database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'hunger'")
     }
-    fun setInventory(inventory: Inventory){
-        var serializedInventory = serializeItemMap(inventory.itemsInside)
+    fun setInventory(itemsMap: LinkedHashMap<Item,String>){
+        var serializedInventory = serializeItemMap(itemsMap)
         database.execSQL("UPDATE stats SET quantity = '$serializedInventory' WHERE stat = 'inventory'")
+    }
+    fun getInventory(): LinkedHashMap<Item,String>{
+        var inventoryQuery: Cursor = database.rawQuery(getInventoryQuery(),null)
+        return extractInventory(inventoryQuery)
+    }
+    private fun getInventoryQuery(): String{
+        return "SELECT quantity FROM stats WHERE stat = 'inventory'"
+    }
+
+    private fun extractInventory(results: Cursor):  LinkedHashMap<Item,String>{
+        results.moveToFirst()
+        return unserializeItemsMap(results)
+    }
+    private fun unserializeInventory(itemMapText: String): LinkedHashMap<Item,String>{
+        var gson = Gson()
+        return gson.fromJson(itemMapText, LinkedHashMap<Item,String>().javaClass)
     }
 
     fun getCities(): MutableList<City>{

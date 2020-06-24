@@ -15,7 +15,6 @@ abstract class Item: Serializable {
         return Class.forName(this::class.qualifiedName!!).newInstance()
     }
 
-    open fun printTest(){
-        println("The Type is ....::")
-    }
+    open fun activateItemEffect(player: Player){}
+    abstract fun isConsumable(): Boolean
 }

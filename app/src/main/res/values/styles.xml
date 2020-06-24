@@ -9,4 +9,10 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="SwitchTextAppearance" parent="@android:style/TextAppearance.Holo.Small">
+        <item name="android:textColor">#F1311F</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

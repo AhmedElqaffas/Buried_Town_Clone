@@ -9,7 +9,12 @@ abstract class Drink: Item, Serializable {
         this.thirstBonus = thirstBonus
     }
 
-    override fun printTest(){
-        println("DRINK")
+    override fun activateItemEffect(player: Player) {
+        player.updateThirst(thirstBonus)
+        println("thirst is now ${player.getThirst()}")
+    }
+
+    override fun isConsumable():Boolean {
+        return true
     }
 }

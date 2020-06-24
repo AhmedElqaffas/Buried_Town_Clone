@@ -14,17 +14,17 @@ class Player(val context: Context) {
 
     var gameHandler = GameHandler()
 
-    fun getPlayerStats(): Array<Int>{
-        return arrayOf(hp,hunger,thirst)
-    }
-
     fun updateStatsFromDatabase(){
         this.setHealthPoints(database.getHealthPoints()!!)
-        this.setHunger(database.getHunger())
-        this.setThirst(database.getThirst())
+        this.hunger = database.getHunger()
+        this.thirst = database.getThirst()
+        this.inventory.itemsInside = database.getInventory()
+        var location = database.getPlayerLocation()
+        this.locationX = location[0]
+        this.locationY = location[1]
     }
 
-    fun setHunger(value: Int){
+   /* fun setHunger(value: Int){
         if(value == 0) {
             gameHandler.endGame()
         }
@@ -39,7 +39,7 @@ class Player(val context: Context) {
         else{
             thirst = value
         }
-    }
+    }*/
     fun setHealthPoints(value: Int){
         if(value == 0) {
             gameHandler.endGame()
@@ -74,6 +74,24 @@ class Player(val context: Context) {
     }
     fun getInventory(): Inventory{
         return inventory
+    }
+    fun updateHunger(hungerBonus: Int){
+        hunger += hungerBonus
+        if(hunger > 100)
+            hunger = 100
+        if(hunger == 0) {
+            gameHandler.endGame()
+        }
+        database.setHunger(hunger)
+    }
+    fun updateThirst(thirstBonus: Int){
+        thirst += thirstBonus
+        if(thirst > 100)
+            thirst = 100
+        if(thirst == 0) {
+            gameHandler.endGame()
+        }
+        database.setThirst(thirst)
     }
 
 }

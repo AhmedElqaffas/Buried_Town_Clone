@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InventoryHelper"
+    android:orientation="horizontal"
+    android:background="@color/gameTheme">
+
+
+    <Switch
+        android:id="@+id/swipeConsumeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:showText="true"
+        android:switchTextAppearance="@style/SwitchTextAppearance"
+        android:textAlignment="center"
+        android:textOff="Swap"
+        android:textOn="Consume"
+        android:textStyle="bold" />
+</LinearLayout>

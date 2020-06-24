@@ -96,14 +96,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun loadPlayerStats(){
-        val hp = database.getHealthPoints()!!
-        val hunger = database.getHunger()
-        val thirst = database.getThirst()
-        val playerLocation = database.getPlayerLocation()
-        player.setHealthPoints(hp)
-        player.setHunger(hunger)
-        player.setThirst(thirst)
-        player.setLocation(playerLocation[0], playerLocation[1])
+        player.updateStatsFromDatabase()
     }
 
     private fun updatePlayerData(){
