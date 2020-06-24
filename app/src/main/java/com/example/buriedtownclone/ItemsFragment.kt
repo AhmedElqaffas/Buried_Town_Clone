@@ -133,8 +133,8 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
 
     fun consumeItem(item: Item, slotIndex: Int, player: Player){
         if(item.isConsumable()){
-            reduceItemQuantity(slotIndex)
             player.updateStatsFromDatabase()
+            reduceItemQuantity(slotIndex)
             item.activateItemEffect(player)
         }
     }

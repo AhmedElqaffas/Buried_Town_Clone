@@ -79,7 +79,7 @@ class Player(val context: Context) {
         hunger += hungerBonus
         if(hunger > 100)
             hunger = 100
-        if(hunger == 0) {
+        if(hunger <= 0) {
             gameHandler.endGame()
         }
         database.setHunger(hunger)
@@ -88,7 +88,7 @@ class Player(val context: Context) {
         thirst += thirstBonus
         if(thirst > 100)
             thirst = 100
-        if(thirst == 0) {
+        if(thirst <= 0) {
             gameHandler.endGame()
         }
         database.setThirst(thirst)
