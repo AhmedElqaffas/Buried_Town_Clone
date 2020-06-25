@@ -8,19 +8,22 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
 
-    private var database = Database(this)
-    lateinit var player: Player
-    var visualsUpdater =  VisualsUpdater(this)
+    private var database = Database()
+    var player =  Player()
+    var visualsUpdater =  VisualsUpdater()
     lateinit var spotItemsFragment: ItemsFragment
     lateinit var inventoryItemsFragment: ItemsFragment
     lateinit var inventoryHelperFragment: InventoryHelper
+  //  var gameHandler = GameHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_spot)
 
-        createUpdatedPlayerObject()
+        VisualsUpdater.activity = this
+        GameHandler.context = this
+        TimeHandler.context = this
         showStatsBarFragment()
         manageSpot()
         showInventoryHelperFragment()
@@ -39,7 +42,6 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun createUpdatedPlayerObject(){
-        player = Player(this)
         player.updateStatsFromDatabase()
     }
 

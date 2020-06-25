@@ -33,7 +33,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         R.drawable.police_station to Definitions.policeStation , R.drawable.workshop to Definitions.workshop,
         R.drawable.home to Definitions.home)
 
-    lateinit var database: Database
+    var database = Database()
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -50,7 +50,6 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        database = Database(activity!!)
         val inflated: View = inflateLayoutHavingNumberOfSpots(inflater, container)
         if(isNewCity) {
             createCity(inflated)

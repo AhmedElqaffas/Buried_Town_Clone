@@ -1,27 +1,30 @@
 package com.example.buriedtownclone
 
-import android.content.Context
+class Player() {
 
-class Player(val context: Context) {
-    private var hp: Int = 0
-    private var hunger:Int = 0
-    private var thirst: Int = 0
-    private var locationX = 0
-    private var locationY = 0
-    private var inventory: Inventory = Inventory()
+    companion object{
 
-    var database: Database = Database(context)
+        private var hp: Int = 100
+        private var hunger:Int = 100
+        private var thirst: Int = 100
+        private var locationX = 0
+        private var locationY = 0
+        private var inventory: Inventory = Inventory()
 
-    private var gameHandler = GameHandler()
+        private var database: Database = Database()
+        private var gameHandler = GameHandler()
+    }
+
 
     fun updateStatsFromDatabase(){
+
         this.setHealthPoints(database.getHealthPoints()!!)
-        this.hunger = database.getHunger()
-        this.thirst = database.getThirst()
-        this.inventory.itemsInside = database.getInventory()
+        hunger = database.getHunger()
+        thirst = database.getThirst()
+        inventory.itemsInside = database.getInventory()
         var location = database.getPlayerLocation()
-        this.locationX = location[0]
-        this.locationY = location[1]
+        locationX = location[0]
+        locationY = location[1]
     }
 
    /* fun setHunger(value: Int){

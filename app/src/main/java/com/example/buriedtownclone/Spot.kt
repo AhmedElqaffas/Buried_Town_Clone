@@ -1,9 +1,6 @@
 package com.example.buriedtownclone
 
 import android.database.Cursor
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import java.io.Serializable
 
 /* Implements serializable to be able to send an object of this class to the inventory activity
@@ -22,10 +19,14 @@ abstract class Spot: ItemsContainer, Serializable{
 
     fun visited(){
         if (!this.visited) {
-            var database = Database()
+            val database = Database()
             visited = true
             database.updateSpotVisit(this)
         }
+    }
+
+    override fun getClassName(): String {
+        return "Building"
     }
 
     open fun saveInDatabase(){}

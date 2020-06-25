@@ -5,9 +5,10 @@ import android.os.Bundle
 
 class HomeSpotActivity : AppCompatActivity() {
 
-    private var database = Database(this)
-    lateinit var player: Player
-    var visualsUpdater =  VisualsUpdater(this)
+    var database = Database()
+    var player = Player()
+   // var visualsUpdater =  VisualsUpdater()
+    //var gameHandler = GameHandler()
 
     override fun onBackPressed() {
         setResult(RESULT_OK, intent)
@@ -18,13 +19,15 @@ class HomeSpotActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_spot)
 
-        createUpdatedPlayerObject()
+        VisualsUpdater.activity = this
+        GameHandler.context = this
+        TimeHandler.context = this
+        //createUpdatedPlayerObject()
         manageSpot()
         showStatsBarFragment()
     }
 
     private fun createUpdatedPlayerObject(){
-        player = Player(this)
         player.updateStatsFromDatabase()
     }
 

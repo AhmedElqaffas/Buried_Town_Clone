@@ -1,10 +1,8 @@
 package com.example.buriedtownclone
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.os.Handler
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -12,23 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.TextView
-import androidx.core.os.postDelayed
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_items.*
 import java.lang.Integer.parseInt
 
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
+class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var inflated: GridLayout
-    var itemActionDecider : ItemActionDecider? = null
+    private lateinit var inflated: GridLayout
+    private var itemActionDecider : ItemActionDecider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,18 +69,18 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
 
     private fun renameFragmentTitle(){
-        var titleTextView = inflated.findViewById<TextView>(R.id.fragmentTitle)
-        titleTextView.text = itemContainerType::class.simpleName +" items"
+        val titleTextView = inflated.findViewById<TextView>(R.id.fragmentTitle)
+        titleTextView.text = itemContainerType.getClassName()
     }
 
     private fun drawSlots(){
         for(i in 0 until itemContainerType.slots){
-            var slot = drawCurrentSlot()
+            val slot = drawCurrentSlot()
             customizeCurrentSlot(slot)
         }
     }
     private fun drawCurrentSlot(): TextView{
-        var newSlot = TextView(context)
+        val newSlot = TextView(context)
         inflated.addView(newSlot)
         return newSlot
     }
@@ -95,7 +91,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         setSlotBackground(slot)
     }
     private fun setSlotTag(slot: View){
-        var indexWithinParent: Int = (slot.parent as GridLayout).indexOfChild(slot)
+        val indexWithinParent: Int = (slot.parent as GridLayout).indexOfChild(slot)
         slot.tag = "slot$indexWithinParent"
     }
     private fun setSlotWeightInParent(slot: TextView){
@@ -137,14 +133,14 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
 
     fun consumeItem(item: Item, slotIndex: Int, player: Player){
         if(item.isConsumable()){
-            player.updateStatsFromDatabase()
+            //player.updateStatsFromDatabase()
             reduceItemQuantity(slotIndex)
             item.activateItemEffect(player)
         }
     }
 
     fun addItem(item: Item): Boolean{
-        var itemAdded = itemContainerType.addItem(item)
+        val itemAdded = itemContainerType.addItem(item)
         if(itemAdded){
             refreshLayout()
             return true
@@ -157,7 +153,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
     }
 
     private fun reduceItemQuantity(slotIndex: Int){
-        var newQuantity = getItemQuantity(slotIndex) - 1
+        val newQuantity = getItemQuantity(slotIndex) - 1
         setItemQuantity(slotIndex,newQuantity)
         updateItemQuantityTextView(slotIndex, newQuantity)
         refreshLayoutIfItemIsFinished(newQuantity)
@@ -186,7 +182,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
 
     private fun addItemImageAndQuantity(slot: View, slotIndex: Int){
         addItemImage(slot, slotIndex)
-        addItemQuantity(slot,slotIndex)
+        addItemQuantity(slotIndex)
 
     }
     private fun addItemImage(slot: View, slotIndex: Int){
@@ -197,17 +193,17 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         return ArrayList<Item>(itemContainerType.itemsInside.keys)[slotIndex]
     }
 
-    private fun addItemQuantity(slot: View, slotIndex: Int){
-        var quantity = getItemQuantity(slotIndex)
+    private fun addItemQuantity(slotIndex: Int){
+        val quantity = getItemQuantity(slotIndex)
         updateItemQuantityTextView(slotIndex,quantity)
     }
     private fun getItemQuantity(slotIndex: Int): Int{
-        var stringQuantity = ArrayList<String>(itemContainerType.itemsInside.values)[slotIndex]
+        val stringQuantity = ArrayList<String>(itemContainerType.itemsInside.values)[slotIndex]
         return parseInt(stringQuantity)
     }
 
     private fun updateItemQuantityTextView(slotIndex: Int, quantity: Int){
-        var slotView = inflated.getChildAt(slotIndex + 1) as TextView
+        val slotView = inflated.getChildAt(slotIndex + 1) as TextView
         slotView.text = quantity.toString()
     }
 

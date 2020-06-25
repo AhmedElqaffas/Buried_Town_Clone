@@ -1,34 +1,41 @@
 package com.example.buriedtownclone
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 
-class GameHandler() {
+class GameHandler {
+
+
+
     companion object{
-        lateinit var context: Activity
-        lateinit var database: Database
+
+        var context: Activity? = null
+        private var database = Database()
+        private var timeHandler = TimeHandler()
+        var isGameFinished = false
     }
 
-    constructor(activity: Activity) : this() {
-        context = activity
-        database = Database(context)
+    constructor(){
+        isGameFinished = false
     }
 
     fun endGame(){
-        (context as GameActivity).timeHandler.stopTimer()
-        handleGameEndingWhenNavigatingCase()
+        isGameFinished = true
+        timeHandler.stopTimer()
         database.deleteAllData()
         goToMainMenu()
+        freeData()
     }
     private fun goToMainMenu(){
-        var intent = Intent(context, MainActivity::class.java)
+        println(context.toString())
+        val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        context.startActivity(intent)
+        context!!.startActivity(intent)
     }
 
-    private fun handleGameEndingWhenNavigatingCase(){
-        (context as GameActivity).handler.removeCallbacksAndMessages(null)
-        (context as GameActivity).stopSound()
+    private fun freeData(){
+        context = null
+        VisualsUpdater.activity = null
+        TimeHandler.context = null
     }
 }

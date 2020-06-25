@@ -1,6 +1,5 @@
 package com.example.buriedtownclone
 
-
 import java.io.Serializable
 
 abstract class ItemsContainer: Serializable {
@@ -15,9 +14,7 @@ abstract class ItemsContainer: Serializable {
     }
 
     open fun addItem(item: Item): Boolean{
-        println("SIZE IS   ${itemsInside.size}")
-        for (item in itemsInside)
-            println(item.key::class.qualifiedName)
+
         if(uniqueItem(item) && existsSpaceForItem()){
             itemsInside[item] = "1"
             return true
@@ -47,4 +44,6 @@ abstract class ItemsContainer: Serializable {
             }
         }
     }
+
+    abstract fun getClassName(): String
 }

@@ -4,23 +4,25 @@ import android.content.Context
 import android.os.Handler
 
 
-class TimeHandler()  {
-    var handler = Handler()
-    lateinit var thirstDecrease: Runnable
-    lateinit var hungerDecrease: Runnable
-    lateinit var context: Context
-    lateinit var player: Player
-    //lateinit var database: Database
+class TimeHandler{
+    companion object{
 
-    var visualUpdater = VisualsUpdater()
+        var handler: Handler? = null
 
-    constructor(context: Context, player: Player): this(){
-        this.context = context
-        this.player = player
-        //database = Database(context)
+        lateinit var thirstDecrease: Runnable
+        lateinit var hungerDecrease: Runnable
+        lateinit var navigationThirstDecrease: Runnable
+        lateinit var navigationHungerDecrease: Runnable
+        var context: Context? = null
+
+        private var player = Player()
+        private var visualUpdater = VisualsUpdater()
     }
 
+
+
     fun startTimer(){
+        handler = Handler()
         decreaseThirstEveryFewSeconds()
         decreaseHungerEveryFewSeconds()
     }
@@ -28,12 +30,14 @@ class TimeHandler()  {
     private fun decreaseThirstEveryFewSeconds(){
         thirstDecrease = Runnable {
             decreaseThirst()
-            handler.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
+            if(player.getThirst() <= 0){
+                return@Runnable
+            }
+            handler!!.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
         }
-        handler.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
+        handler!!.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
     }
     private fun decreaseThirst(){
-        player.updateStatsFromDatabase()
         player.updateThirst(-1)
         visualUpdater.showStatsInStatsBar(player)
     }
@@ -41,25 +45,53 @@ class TimeHandler()  {
     private fun decreaseHungerEveryFewSeconds(){
         hungerDecrease = Runnable {
             decreaseHunger()
-            handler.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
+            if(player.getHunger() <= 0){
+                return@Runnable
+            }
+            handler!!.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
         }
-        handler.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
+        handler!!.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
     }
     private fun decreaseHunger(){
-        player.updateStatsFromDatabase()
+        //player.updateStatsFromDatabase()
         player.updateHunger(-1)
         visualUpdater.showStatsInStatsBar(player)
     }
 
     fun stopTimer(){
-        handler.removeCallbacks(thirstDecrease)
-        handler.removeCallbacks(hungerDecrease)
-        //handler = Handler()
+        handler!!.removeCallbacks(thirstDecrease)
+        handler!!.removeCallbacks(hungerDecrease)
     }
 
-    fun updateObjects(context: Context, player: Player){
-        this.player = player
-        this.context = context
+    fun startNavigationStatsDecrease(){
+        acceleratedThirstDecrease()
+        acceleratedHungerDecrease()
+    }
+    private fun acceleratedThirstDecrease(){
+        navigationThirstDecrease = Runnable {
+            decreaseThirst()
+            if(player.getThirst() <= 0){
+                return@Runnable
+            }
+            handler!!.postDelayed(navigationThirstDecrease,GameSettings.navigationRateOfThirst)
+        }
+        handler!!.postDelayed(navigationThirstDecrease,GameSettings.navigationRateOfThirst)
+    }
+
+    private fun acceleratedHungerDecrease(){
+        navigationHungerDecrease = Runnable {
+            decreaseHunger()
+            if(player.getHunger() <= 0){
+                return@Runnable
+            }
+            handler!!.postDelayed(navigationHungerDecrease,GameSettings.navigationRateOfHunger)
+        }
+        handler!!.postDelayed(navigationHungerDecrease,GameSettings.navigationRateOfHunger)
+    }
+
+    fun stopNavigationStatsDecrease(){
+        handler!!.removeCallbacks(navigationHungerDecrease)
+        handler!!.removeCallbacks(navigationThirstDecrease)
     }
 
 }

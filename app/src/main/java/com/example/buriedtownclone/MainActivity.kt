@@ -4,18 +4,22 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.google.common.collect.LinkedHashMultimap
 import kotlinx.android.synthetic.main.new_game.*
 
 class MainActivity : AppCompatActivity() {
-    lateinit var database: Database
+
+    var database = Database()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.new_game)
+
         initializeDatabase()
     }
 
     private fun initializeDatabase(){
-        database = Database(this)
+        Database.context = this
         database.initializeDatabase()
     }
 
@@ -38,10 +42,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun newGame(view: View){
-        goToGame(true);
+        goToGame(true)
     }
     private fun goToGame(newGame: Boolean){
-        var intent: Intent = Intent(this, GameActivity::class.java)
+        val intent = Intent(this, GameActivity::class.java)
         intent.putExtra("new game",newGame)
         startActivity(intent)
     }

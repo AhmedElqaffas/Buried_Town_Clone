@@ -1,11 +1,9 @@
 package com.example.buriedtownclone
 
-import android.database.Cursor
-
 class NormalSpot: Spot() {
 
     override fun saveInDatabase() {
-        var database = Database()
+        val database = Database()
         database.saveSpot(this)
     }
 

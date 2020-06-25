@@ -1,32 +1,32 @@
 package com.example.buriedtownclone
 
 import android.content.Intent
-import android.content.res.Resources
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.android.synthetic.main.activity_game.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.lang.Math.ceil
-import java.net.URI
 import kotlin.math.floor
 
 class GameActivity : AppCompatActivity() {
 
-    lateinit var database: Database
-    lateinit var player: Player
-    var citiesVisitedList: MutableList<City> = mutableListOf()
-    lateinit var currentCity: City
-    lateinit var timeHandler: TimeHandler
-    lateinit var visualsUpdater: VisualsUpdater
-    lateinit var gameHandler: GameHandler
-    var handler= Handler(Looper.getMainLooper())
-    var mediaPlayer = MediaPlayer()
+    var database = Database()
+    var player = Player()
+    private var citiesVisitedList: MutableList<City> = mutableListOf()
+    private lateinit var currentCity: City
+    private var timeHandler = TimeHandler()
+    private var visualsUpdater = VisualsUpdater()
+    private var gameHandler = GameHandler()
+    var handler= Handler()
+    private var mediaPlayer = MediaPlayer()
+    private var isNavigating = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +47,8 @@ class GameActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshClassVariables()
-        updatePlayerData()
-        showPlayerStatsInStatsBar()
+        //updatePlayerData()
+        showStatsBarFragment()
     }
 
     private fun initializeOrLoadGameData(){
@@ -63,7 +63,6 @@ class GameActivity : AppCompatActivity() {
             loadGameData()
             setupViewPagersAdapters()
             goToCity(player.getLocationX(),player.getLocationY())
-
         }
     }
     private fun isNewGame(): Boolean{
@@ -71,24 +70,23 @@ class GameActivity : AppCompatActivity() {
         return intent.getBooleanExtra("new game", true)
     }
 
+    private fun initializeClassVariables(){
+        Database.context = this
+        TimeHandler.context = this
+        VisualsUpdater.activity = this
+        GameHandler.context = this
+    }
+
     private fun initializeGameData(){
         database.deleteAllData()
         database.initializeStats()
     }
 
-    private fun initializeClassVariables(){
-        database = Database(this)
-        player = Player(this)
-        timeHandler = TimeHandler(this,player)
-        visualsUpdater = VisualsUpdater(this)
-        gameHandler = GameHandler(this)
-    }
-
     private fun refreshClassVariables(){
-        database = Database(this)
-        player.updateStatsFromDatabase()
-        timeHandler.updateObjects(this, player)
-        visualsUpdater.updateActivityContext(this)
+        Database.context = this
+        GameHandler.context = this
+        VisualsUpdater.activity = this
+        TimeHandler.context = this
     }
 
     private fun loadGameData(){
@@ -112,19 +110,9 @@ class GameActivity : AppCompatActivity() {
         return database.getCities()
     }
 
-    private fun showPlayerStatsInStatsBar(){
-        showStatsBarFragment()
-        // The delay is to make sure fragment is ready
-        handler.postDelayed({
-            showStats()
-        }, 10)
-    }
     private fun showStatsBarFragment(){
         supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
             .commit()
-    }
-    private fun showStats(){
-        visualsUpdater.showStatsInStatsBar(player)
     }
 
     private fun setupViewPagersAdapters(){
@@ -151,16 +139,28 @@ class GameActivity : AppCompatActivity() {
         visualsUpdater.showWalkingPanel()
         playSound(R.raw.run)
         waitForSomeTimeToSimulateWalking()
-        updatePlayerLocation()
+        isNavigating = true
+        timeHandler.startNavigationStatsDecrease()
 
     }
     private fun waitForSomeTimeToSimulateWalking(){
-        handler.postDelayed({
-            loadOrCreateCity()
-            enableUserInteraction()
-            stopSound()
-            visualsUpdater.hideWalkingPanel()
-        },1500)
+
+            handler.postDelayed({
+                endWalkingEffect()
+            },1500)
+
+    }
+    private fun endWalkingEffect(){
+        timeHandler.stopNavigationStatsDecrease()
+        enableUserInteraction()
+        stopSound()
+        updatePlayerLocation()
+        if(GameHandler.isGameFinished) {
+            return
+        }
+        loadOrCreateCity()
+        visualsUpdater.hideWalkingPanel()
+        isNavigating = false
     }
 
     private fun loadOrCreateCity(){
@@ -263,8 +263,7 @@ class GameActivity : AppCompatActivity() {
         mediaPlayer.prepareAsync()
 
     }
-    fun stopSound(){
-        mediaPlayer.stop()
+    private fun stopSound(){
         mediaPlayer.release()
     }
 

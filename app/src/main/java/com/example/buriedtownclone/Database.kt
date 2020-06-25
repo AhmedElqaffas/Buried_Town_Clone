@@ -7,22 +7,18 @@ import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
 
-class Database(){
+class Database{
 
     companion object{
         lateinit var context: Context
         lateinit var database: SQLiteDatabase
     }
 
-    constructor(context: Context): this(){
-        Database.context = context
-    }
-
     fun initializeDatabase(){
         openOrCreateDatabase()
         createTables()
     }
-    fun openOrCreateDatabase(){
+    private fun openOrCreateDatabase(){
         database = context.openOrCreateDatabase("Game", Context.MODE_PRIVATE, null)
     }
     private fun createTables(){

@@ -1,7 +1,6 @@
 package com.example.buriedtownclone
 
 import android.os.Bundle
-import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +11,8 @@ import kotlinx.android.synthetic.main.fragment_stats_bar.*
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+
+var visualsUpdater = VisualsUpdater()
 
 class StatsBarFragment(val player: Player) : Fragment() {
     // TODO: Rename and change types of parameters
@@ -27,17 +28,23 @@ class StatsBarFragment(val player: Player) : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var inflated =  inflater.inflate(R.layout.fragment_stats_bar, container, false)
-        val handler = Handler()
-        // The delay is to make sure the fragment is ready
-        handler.postDelayed({updateStats(player)},10)
-        return inflated
+        return inflater.inflate(R.layout.fragment_stats_bar, container, false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateStats(player)
+        showStats()
     }
 
     fun updateStats(player: Player){
         hpTextView.text = player.getHealthPoints().toString()
         hungerTextView.text = player.getHunger().toString()
         thirstTextView.text = player.getThirst().toString()
+    }
+
+    private fun showStats(){
+        visualsUpdater.showStatsInStatsBar(player)
     }
 
 }
