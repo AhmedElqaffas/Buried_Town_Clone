@@ -11,7 +11,6 @@ abstract class Drink: Item, Serializable {
 
     override fun activateItemEffect(player: Player) {
         player.updateThirst(thirstBonus)
-        println("thirst is now ${player.getThirst()}")
     }
 
     override fun isConsumable():Boolean {

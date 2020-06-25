@@ -65,7 +65,7 @@
             app:layout_constraintRight_toRightOf="@id/verticalGuideline_two"
             app:layout_constraintTop_toTopOf="@id/horizontalGuideline_one" />
         <ImageView
-            android:id="@+id/fourthSpot"
+            android:id="@+id/thirdSpot"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="fitCenter"
@@ -74,7 +74,7 @@
             app:layout_constraintRight_toRightOf="@id/verticalGuideline_one"
             app:layout_constraintTop_toTopOf="@id/horizontalGuideline_two" />
         <ImageView
-            android:id="@+id/fifthSpot"
+            android:id="@+id/fourthSpot"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="fitCenter"
@@ -82,6 +82,15 @@
             app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_two"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/horizontalGuideline_one" />
+    <ImageView
+        android:id="@+id/fifthSpot"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/verticalGuideline_two"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_two" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

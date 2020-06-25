@@ -7,12 +7,11 @@ import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
 
-
 class Database(){
 
     companion object{
         lateinit var context: Context
-        lateinit  var database: SQLiteDatabase
+        lateinit var database: SQLiteDatabase
     }
 
     constructor(context: Context): this(){
@@ -34,6 +33,7 @@ class Database(){
         createDrinksTable()
         createCitiesTable()
         createSpotsTable()
+        createHomeSpotTable()
     }
     private fun createStatsTable(){
         database.execSQL("CREATE TABLE IF NOT EXISTS stats(stat VARCHAR(50), " +
@@ -66,6 +66,11 @@ class Database(){
                 "(index_within_city, city_x, city_y), " +
                 "CONSTRAINT fk FOREIGN KEY(city_x, city_y) REFERENCES cities(x_position, y_position))")
     }
+    private fun createHomeSpotTable(){
+        database.execSQL("CREATE TABLE IF NOT EXISTS home(type_home VARCHAR(50), farm_level TINYINT, " +
+                "CONSTRAINT pk PRIMARY KEY (type_home), " +
+                "CONSTRAINT home_foreign_key FOREIGN KEY (type_home) REFERENCES spots(type))")
+    }
     private fun getQuantityQuery(tableName: String, selected: String, selector: String): String{
         return "SELECT quantity FROM $tableName WHERE $selector='$selected'"
     }
@@ -78,6 +83,7 @@ class Database(){
         database.execSQL("DELETE FROM drinks")
         database.execSQL("DELETE FROM cities")
         database.execSQL("DELETE FROM spots")
+        database.execSQL("DELETE FROM home")
     }
 
     fun initializeStats(){
@@ -90,7 +96,7 @@ class Database(){
     }
 
     fun getHealthPoints(): Int?{
-        var healthPointsQuery: Cursor = database.rawQuery(getQuantityQuery
+        val healthPointsQuery: Cursor = database.rawQuery(getQuantityQuery
             ("stats","hp","stat"), null)
         return if(!foundResults(healthPointsQuery)){
             null
@@ -125,7 +131,7 @@ class Database(){
         return formSpotsObjects(spotsQueryResult)
     }
     private fun getSpotsQuery(city: City): String{
-        return "SELECT * FROM spots WHERE city_x = ${city.locationX} " +
+        return "SELECT * FROM spots LEFT JOIN home ON spots.type = home.type_home WHERE city_x = ${city.locationX} " +
                 "and city_y = ${city.locationY}"
     }
     private fun formSpotsObjects(results: Cursor): MutableList<Spot>{
@@ -137,18 +143,20 @@ class Database(){
         }
         return spotsObjects
     }
-    private fun formSpot(query: Cursor): Spot{
+    private fun formSpot(queryRow: Cursor): Spot{
 
-        var spot = Spot()
-        spot.cityX = query.getInt(query.getColumnIndex("city_x"))
-        spot.cityY = query.getInt(query.getColumnIndex("city_y"))
-        spot.locationWithinCity = query.getInt(query.getColumnIndex("index_within_city"))
-        spot.visited = query.getInt(query.getColumnIndex("visited")) == 1 // to convert int to boolean
-        spot.itemsInside = unserializeItemsMap(query)
-        spot.spotType = query.getString(query.getColumnIndex("type"))
+        var spot: Spot
+        val spotType = queryRow.getString(queryRow.getColumnIndex("type"))
+        println(spotType)
+        spot = if(spotType == Definitions.home){
+            HomeSpot()
+        } else{
+            NormalSpot()
+        }
+        spot.formObject(queryRow)
         return spot
     }
-    private fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
+    fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
         var itemsInsideHashMap = linkedMapOf<Item, String>()
         var itemsInsideSpotText = getItemMapString(query)
         try {
@@ -178,11 +186,19 @@ class Database(){
 
     }
 
+    fun saveHomeSpot(homeSpot: HomeSpot){
+        saveSpot(homeSpot)
+        addHomeDetails(homeSpot)
+    }
     fun saveSpot(spot: Spot){
         val isVisitedInt = if (spot.visited) 1 else 0
         val itemsInsideText: String = serializeItemMap(spot.itemsInside)
         database.execSQL("INSERT INTO spots values(${spot.locationWithinCity}," +
                 "${spot.cityX}, ${spot.cityY},'$itemsInsideText', ${isVisitedInt}, '${spot.spotType}')")
+    }
+    private fun addHomeDetails(homeSpot: HomeSpot){
+        database.execSQL("INSERT INTO home values('${homeSpot.spotType}'," +
+                "${homeSpot.farmLevel})")
     }
     private fun serializeItemMap(itemMap: LinkedHashMap<Item,String>): String{
         var serializedMap = linkedMapOf<String, String>()

@@ -92,6 +92,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         setSlotTag(slot)
         setSlotWeightInParent(slot)
         customizeTextStyle(slot)
+        setSlotBackground(slot)
     }
     private fun setSlotTag(slot: View){
         var indexWithinParent: Int = (slot.parent as GridLayout).indexOfChild(slot)
@@ -111,6 +112,9 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         slot.setTextColor(resources.getColor(R.color.quantity))
         slot.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
         slot.setTypeface(slot.typeface, Typeface.BOLD)
+    }
+    private fun setSlotBackground(slot: TextView){
+        slot.setBackgroundResource(R.drawable.empty_slot)
     }
 
     private fun setupSlotViews(){
@@ -174,7 +178,7 @@ class ItemsFragment(val itemContainerType: ItemsContainer) : Fragment() {
         for(slot in inflated.children){
             if(slot.id != R.id.fragmentTitle){
                 (slot as TextView).text = ""
-                slot.setBackgroundResource(0)
+                slot.setBackgroundResource(R.drawable.empty_slot)
                 slot.setOnClickListener{}
             }
         }

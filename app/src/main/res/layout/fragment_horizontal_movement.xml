@@ -11,5 +11,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gameTheme"
-        android:src="@drawable/abc_vector_test" />
+        android:src="@drawable/horizontal_arrows" />
 </FrameLayout>

@@ -11,5 +11,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000"
-        android:src="@android:drawable/arrow_up_float" />
+        android:src="@drawable/vertical_arrows" />
 </FrameLayout>

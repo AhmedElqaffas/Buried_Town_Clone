@@ -8,6 +8,7 @@ public final class Definitions {
     static String school = "school";
     static String house = "house";
     static String workshop = "workshop";
+    static String home = "home";
     static int homeX = 0;
     static int homeY = 0;
     static String spotItems = "spot";
@@ -17,4 +18,6 @@ public final class Definitions {
     static String water = "Water";
     static String tuna = "Tuna";
     static int numberOfSlotsInSpot = 10;
+    static int normalSpotRequestCode = 1;
+    static int homeSpotRequestCode = 2;
 }

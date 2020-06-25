@@ -6,16 +6,18 @@ import android.content.Intent
 
 class GameHandler() {
     companion object{
-        lateinit var context: Context
+        lateinit var context: Activity
         lateinit var database: Database
     }
 
-    constructor(context: Context) : this() {
-        GameHandler.context = context
-        database = Database(Companion.context)
+    constructor(activity: Activity) : this() {
+        context = activity
+        database = Database(context)
     }
 
     fun endGame(){
+        (context as GameActivity).timeHandler.stopTimer()
+        handleGameEndingWhenNavigatingCase()
         database.deleteAllData()
         goToMainMenu()
     }
@@ -23,5 +25,10 @@ class GameHandler() {
         var intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         context.startActivity(intent)
+    }
+
+    private fun handleGameEndingWhenNavigatingCase(){
+        (context as GameActivity).handler.removeCallbacksAndMessages(null)
+        (context as GameActivity).stopSound()
     }
 }

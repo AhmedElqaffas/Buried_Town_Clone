@@ -10,14 +10,14 @@ class TimeHandler()  {
     lateinit var hungerDecrease: Runnable
     lateinit var context: Context
     lateinit var player: Player
-    lateinit var database: Database
+    //lateinit var database: Database
 
     var visualUpdater = VisualsUpdater()
 
     constructor(context: Context, player: Player): this(){
         this.context = context
         this.player = player
-        database = Database(context)
+        //database = Database(context)
     }
 
     fun startTimer(){
@@ -54,7 +54,7 @@ class TimeHandler()  {
     fun stopTimer(){
         handler.removeCallbacks(thirstDecrease)
         handler.removeCallbacks(hungerDecrease)
-        handler = Handler()
+        //handler = Handler()
     }
 
     fun updateObjects(context: Context, player: Player){

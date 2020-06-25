@@ -12,7 +12,7 @@ class Player(val context: Context) {
 
     var database: Database = Database(context)
 
-    var gameHandler = GameHandler()
+    private var gameHandler = GameHandler()
 
     fun updateStatsFromDatabase(){
         this.setHealthPoints(database.getHealthPoints()!!)
@@ -40,7 +40,7 @@ class Player(val context: Context) {
             thirst = value
         }
     }*/
-    fun setHealthPoints(value: Int){
+   private fun setHealthPoints(value: Int){
         if(value == 0) {
             gameHandler.endGame()
         }

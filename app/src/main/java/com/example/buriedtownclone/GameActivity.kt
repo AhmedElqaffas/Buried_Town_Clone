@@ -24,8 +24,8 @@ class GameActivity : AppCompatActivity() {
     lateinit var currentCity: City
     lateinit var timeHandler: TimeHandler
     lateinit var visualsUpdater: VisualsUpdater
-    var gameHandler = GameHandler(this)
-    var handler= Handler()
+    lateinit var gameHandler: GameHandler
+    var handler= Handler(Looper.getMainLooper())
     var mediaPlayer = MediaPlayer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +81,7 @@ class GameActivity : AppCompatActivity() {
         player = Player(this)
         timeHandler = TimeHandler(this,player)
         visualsUpdater = VisualsUpdater(this)
+        gameHandler = GameHandler(this)
     }
 
     private fun refreshClassVariables(){
@@ -154,13 +155,11 @@ class GameActivity : AppCompatActivity() {
 
     }
     private fun waitForSomeTimeToSimulateWalking(){
-        Handler(Looper.getMainLooper()).postDelayed(object: Runnable{
-            override fun run() {
-                loadOrCreateCity()
-                enableUserInteraction()
-                stopSound()
-                visualsUpdater.hideWalkingPanel()
-            }
+        handler.postDelayed({
+            loadOrCreateCity()
+            enableUserInteraction()
+            stopSound()
+            visualsUpdater.hideWalkingPanel()
         },1500)
     }
 
@@ -264,7 +263,7 @@ class GameActivity : AppCompatActivity() {
         mediaPlayer.prepareAsync()
 
     }
-    private fun stopSound(){
+    fun stopSound(){
         mediaPlayer.stop()
         mediaPlayer.release()
     }

@@ -9,7 +9,13 @@ class City(val locationX: Int,val locationY: Int) {
     }
 
     private fun chooseCitySpotsSize(){
-        numberOfSpotsWithin = (3..5).random();
+        if(locationY == Definitions.homeY && locationX == Definitions.homeX){
+            numberOfSpotsWithin = 6
+        }
+        else{
+            numberOfSpotsWithin = (3..5).random();
+        }
+
     }
 
     fun refreshSpotItems(spotToUpdate:Spot){

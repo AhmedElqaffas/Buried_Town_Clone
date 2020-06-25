@@ -25,11 +25,13 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
 
     val stringToSpotImage: HashMap<String, Int> = hashMapOf(Definitions.house to R.drawable.house,
     Definitions.school to R.drawable.school, Definitions.pharmacy to R.drawable.pharmacy,
-    Definitions.policeStation to R.drawable.police_station, Definitions.workshop to R.drawable.workshop)
+    Definitions.policeStation to R.drawable.police_station, Definitions.workshop to R.drawable.workshop,
+    Definitions.home to R.drawable.home)
 
     val spotImageToString: HashMap<Int, String> = hashMapOf(R.drawable.house to Definitions.house,
         R.drawable.school to Definitions.school , R.drawable.pharmacy to Definitions.pharmacy ,
-        R.drawable.police_station to Definitions.policeStation , R.drawable.workshop to Definitions.workshop)
+        R.drawable.police_station to Definitions.policeStation , R.drawable.workshop to Definitions.workshop,
+        R.drawable.home to Definitions.home)
 
     lateinit var database: Database
 
@@ -64,24 +66,34 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
             3 -> inflater.inflate(R.layout.fragment_three_spots_city, container, false)
             4 -> inflater.inflate(R.layout.fragment_four_spots_city, container, false)
             5 -> inflater.inflate(R.layout.fragment_five_spots_city, container, false)
-            else -> inflater.inflate(R.layout.fragment_three_spots_city, container, false)
+            else -> inflater.inflate(R.layout.fragment_home_city, container, false)
         }
     }
 
     private fun createCity(inflated: View){
         var chosenBuildingsImages: MutableList<Int> = randomizeSpotsBuildings()
-        setImageViewsSourcesToBuildings(chosenBuildingsImages, inflated as ConstraintLayout)
+        setImageViewsImagesAndListeners(chosenBuildingsImages, inflated as ConstraintLayout)
         var citySpotsList = createCitySpots(chosenBuildingsImages)
         saveSpots(citySpotsList)
     }
     private fun randomizeSpotsBuildings(): MutableList<Int>{
         val chosenBuildingsList: MutableList<Int> = mutableListOf()
+        var buildingImageId: Int
         for (i in 0 until city.numberOfSpotsWithin) {
-            var buildingImageId = getRandomBuildingBasedOnProbability()
-            chosenBuildingsList.add(buildingImageId)
+            if(isHomeSpot(i)){
+                buildingImageId = R.drawable.home
+            }
+            else {
+                buildingImageId = getRandomBuildingBasedOnProbability()
+            }
+                chosenBuildingsList.add(buildingImageId)
         }
         return chosenBuildingsList
     }
+    private fun isHomeSpot(spotIndex: Int): Boolean{
+        return (city.numberOfSpotsWithin == 6 && spotIndex == 2)
+    }
+
     private fun getRandomBuildingBasedOnProbability(): Int{
         var completeWeight = 0.0
         for (building in buildingsProbabilities){
@@ -97,7 +109,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         throw RuntimeException("Should never be shown.");
     }
 
-    private fun setImageViewsSourcesToBuildings(buildingsImagesId: MutableList<Int>,
+    private fun setImageViewsImagesAndListeners(buildingsImagesId: MutableList<Int>,
                                                 layout: ConstraintLayout){
         var imagesFound = 0
         for (i in 0 until layout.childCount) {
@@ -122,13 +134,19 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         return spotImageToString[resource]!!
     }
     private fun createSpotObject(indexWithinCity: Int, spotType: String): Spot{
-        var spot = Spot()
+        var spot: Spot
+        if(spotType == "home"){
+            spot = HomeSpot()
+        }
+        else{
+            spot = NormalSpot()
+        }
         spot.cityX = city.locationX
         spot.cityY = city.locationY
         spot.locationWithinCity = indexWithinCity
         spot.visited = false
-        spot.itemsInside = generateItemsInsideSpot()
         spot.spotType = spotType
+        spot.itemsInside = if(spotType == Definitions.home) linkedMapOf() else generateItemsInsideSpot()
         return spot
     }
     private fun generateItemsInsideSpot(): LinkedHashMap<Item,String>{
@@ -140,16 +158,10 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         return itemsMap
     }
     private fun saveSpots(citySpotsList: MutableList<Spot>){
-        saveSpotsInCityObject(citySpotsList)
-        saveSpotsInDatabase(citySpotsList)
-    }
-    private fun saveSpotsInCityObject(citySpotsList: MutableList<Spot>){
-        for(spot in citySpotsList)
+        for(spot in citySpotsList){
             city.spots.add(spot)
-    }
-    private fun saveSpotsInDatabase(citySpotsList: MutableList<Spot>){
-        for (spot in citySpotsList)
-            database.saveSpot(spot)
+            spot.saveInDatabase()
+        }
     }
 
     private fun loadCity(city: City, inflated: View){
@@ -173,7 +185,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun imageViewsClickListener(view: View){
-        goToInventoryActivity(getSpotIndex(view))
+        goToActivity(getSpotIndex(view))
 
     }
     private fun getSpotIndex(view: View): Int{
@@ -181,10 +193,12 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         return imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
     }
 
-    private fun goToInventoryActivity(index: Int){
-        var intent = Intent(context, SpotActivity::class.java)
+    private fun goToActivity(index: Int){
+        val activity = city.spots[index].getActivityToOpen()
+        val requestCode = city.spots[index].getActivityRequestCode()
+        var intent = Intent(context, activity)
         intent.putExtra("spot",city.spots[index])
-        this.startActivityForResult(intent, 1)
+        this.startActivityForResult(intent, requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -192,8 +206,13 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         updateValuesOrThrowException(requestCode,resultCode,data)
     }
     private fun updateValuesOrThrowException(requestCode: Int, resultCode: Int, data: Intent?){
-        if(requestCode == 1 && resultCode == RESULT_OK){
-            updateSpotItems(data)
+        if(resultCode == RESULT_OK){
+            if(requestCode == Definitions.normalSpotRequestCode){
+                updateSpotItems(data)
+            }
+            else if (requestCode == Definitions.homeSpotRequestCode){
+                // TODO: Implement returning from home spot
+            }
         }
         else{
             throw Exception("cityFragment onActivityResult: Problem updating city")
