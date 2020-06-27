@@ -184,7 +184,8 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun imageViewsClickListener(view: View){
-        goToActivity(getSpotIndex(view))
+        if(!VisualsUpdater.isDialogActive)
+            goToActivity(getSpotIndex(view))
 
     }
     private fun getSpotIndex(view: View): Int{

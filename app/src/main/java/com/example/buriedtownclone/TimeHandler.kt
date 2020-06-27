@@ -14,7 +14,7 @@ class TimeHandler{
         lateinit var navigationThirstDecrease: Runnable
         lateinit var navigationHungerDecrease: Runnable
         var context: Context? = null
-
+        private var stopped = true
         private var player = Player()
         private var visualUpdater = VisualsUpdater()
     }
@@ -25,6 +25,7 @@ class TimeHandler{
         handler = Handler()
         decreaseThirstEveryFewSeconds()
         decreaseHungerEveryFewSeconds()
+        stopped = false
     }
 
     private fun decreaseThirstEveryFewSeconds(){
@@ -53,7 +54,8 @@ class TimeHandler{
         handler!!.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
     }
     private fun decreaseHunger(){
-        //player.updateStatsFromDatabase()
+
+        println("/////// EXECUTED //////////")
         player.updateHunger(-1)
         visualUpdater.showStatsInStatsBar(player)
     }
@@ -61,6 +63,7 @@ class TimeHandler{
     fun stopTimer(){
         handler!!.removeCallbacks(thirstDecrease)
         handler!!.removeCallbacks(hungerDecrease)
+        stopped = true
     }
 
     fun startNavigationStatsDecrease(){
@@ -68,6 +71,7 @@ class TimeHandler{
         acceleratedHungerDecrease()
     }
     private fun acceleratedThirstDecrease(){
+        println("ACCELERATED///////////////////")
         navigationThirstDecrease = Runnable {
             decreaseThirst()
             if(player.getThirst() <= 0){
@@ -92,6 +96,10 @@ class TimeHandler{
     fun stopNavigationStatsDecrease(){
         handler!!.removeCallbacks(navigationHungerDecrease)
         handler!!.removeCallbacks(navigationThirstDecrease)
+    }
+
+    fun isStopped(): Boolean{
+        return stopped
     }
 
 }

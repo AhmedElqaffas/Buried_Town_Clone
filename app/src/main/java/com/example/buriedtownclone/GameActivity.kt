@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.util.LinkedHashMap
 import kotlin.math.floor
 
 class GameActivity : AppCompatActivity() {
@@ -24,7 +25,7 @@ class GameActivity : AppCompatActivity() {
     private var timeHandler = TimeHandler()
     private var visualsUpdater = VisualsUpdater()
     private var gameHandler = GameHandler()
-    var handler= Handler()
+    private var handler= Handler()
     private var mediaPlayer = MediaPlayer()
     private var isNavigating = false
 
@@ -32,6 +33,7 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
+        println(GameHandler.database.toString())
         initializeClassVariables()
         initializeOrLoadGameData()
         setupViewPagersListeners()
@@ -39,15 +41,16 @@ class GameActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+
         timeHandler.stopTimer()
+        gameHandler.freeData()
+        super.onBackPressed()
     }
 
 
     override fun onResume() {
         super.onResume()
         refreshClassVariables()
-        //updatePlayerData()
         showStatsBarFragment()
     }
 
@@ -57,7 +60,7 @@ class GameActivity : AppCompatActivity() {
             updatePlayerData()
             setupViewPagersAdapters()
             goToCity(Definitions.homeX, Definitions.homeY)
-
+            visualsUpdater.showWelcomingDialog(rootLayout, horizontalGuideline_lastPart)
         }
         else{
             loadGameData()
@@ -75,6 +78,7 @@ class GameActivity : AppCompatActivity() {
         TimeHandler.context = this
         VisualsUpdater.activity = this
         GameHandler.context = this
+        VisualsUpdater.isDialogActive = false
     }
 
     private fun initializeGameData(){
@@ -116,8 +120,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setupViewPagersAdapters(){
-        horizontalViewPager.adapter = HorizontalFragmentsAdapter(supportFragmentManager, lifecycle);
-        verticalViewPager.adapter = VerticalFragmentsAdapter(supportFragmentManager, lifecycle);
+        horizontalViewPager.adapter = HorizontalFragmentsAdapter(supportFragmentManager, lifecycle)
+        verticalViewPager.adapter = VerticalFragmentsAdapter(supportFragmentManager, lifecycle)
     }
     private fun setupViewPagersListeners(){
         horizontalViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -137,7 +141,7 @@ class GameActivity : AppCompatActivity() {
     private fun navigate(){
         disableUserInteraction()
         visualsUpdater.showWalkingPanel()
-        playSound(R.raw.run)
+        playSound()
         waitForSomeTimeToSimulateWalking()
         isNavigating = true
         timeHandler.startNavigationStatsDecrease()
@@ -197,11 +201,11 @@ class GameActivity : AppCompatActivity() {
 
     private fun createAndSaveCity(locationX: Int, locationY: Int ){
         currentCity =  City(locationX, locationY)
-        createAndShowCityFragment(currentCity)
+        createAndShowCityFragment()
         saveCity(currentCity)
     }
 
-    private fun createAndShowCityFragment(city: City){
+    private fun createAndShowCityFragment(){
         supportFragmentManager.beginTransaction().replace(R.id.gameMapContainer, CityFragment(currentCity,true)).commit()
     }
     private fun saveCity(city: City){
@@ -242,19 +246,19 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun startCountingTime(){
-        timeHandler.startTimer();
+        timeHandler.startTimer()
     }
 
     private fun disableUserInteraction(){
         window.setFlags(
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
     private fun enableUserInteraction(){
-        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
-    private fun playSound(resource: Int){
+    private fun playSound(){
         mediaPlayer = MediaPlayer()
         mediaPlayer.setDataSource(this, Uri.parse("android.resource://"+this.packageName+"/raw/run") )
         mediaPlayer.setOnPreparedListener {

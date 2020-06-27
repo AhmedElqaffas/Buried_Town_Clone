@@ -27,8 +27,8 @@
         android:id="@+id/gameMapContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_endgame"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endStats"></FrameLayout>
+        app:layout_constraintBottom_toBottomOf="@id/horizontalGuideline_lastPart"
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endStats"/>
 
     <ImageView
         android:id="@+id/walkingPanel"
@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalGuideline_endgame"
+        android:id="@+id/horizontalGuideline_lastPart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -58,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/horizontalViewPager"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endgame" />
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_lastPart" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/horizontalViewPager"
@@ -67,7 +67,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/verticalViewPager"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_endgame" />
-
+        app:layout_constraintTop_toTopOf="@id/horizontalGuideline_lastPart" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

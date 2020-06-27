@@ -22,17 +22,13 @@ class HomeSpotActivity : AppCompatActivity() {
         VisualsUpdater.activity = this
         GameHandler.context = this
         TimeHandler.context = this
-        //createUpdatedPlayerObject()
+
         manageSpot()
         showStatsBarFragment()
     }
 
-    private fun createUpdatedPlayerObject(){
-        player.updateStatsFromDatabase()
-    }
-
     private fun manageSpot(){
-        var currentSpot = getClickedSpotObject()
+        val currentSpot = getClickedSpotObject()
         setSpotAsVisited(currentSpot)
     }
     private fun getClickedSpotObject(): Spot{

@@ -14,7 +14,6 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     lateinit var spotItemsFragment: ItemsFragment
     lateinit var inventoryItemsFragment: ItemsFragment
     lateinit var inventoryHelperFragment: InventoryHelper
-  //  var gameHandler = GameHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -39,10 +38,6 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
         intent.putExtra("spot", getClickedSpotObject())
         setResult(RESULT_OK, intent)
         finish()
-    }
-
-    private fun createUpdatedPlayerObject(){
-        player.updateStatsFromDatabase()
     }
 
     private fun showStatsBarFragment(){

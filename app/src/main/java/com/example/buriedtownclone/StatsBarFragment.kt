@@ -12,12 +12,12 @@ import kotlinx.android.synthetic.main.fragment_stats_bar.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-var visualsUpdater = VisualsUpdater()
-
 class StatsBarFragment(val player: Player) : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    var visualsUpdater = VisualsUpdater()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

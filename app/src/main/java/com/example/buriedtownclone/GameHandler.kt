@@ -10,13 +10,14 @@ class GameHandler {
     companion object{
 
         var context: Activity? = null
-        private var database = Database()
+        var database = Database()
         private var timeHandler = TimeHandler()
         var isGameFinished = false
     }
 
     constructor(){
         isGameFinished = false
+
     }
 
     fun endGame(){
@@ -33,9 +34,10 @@ class GameHandler {
         context!!.startActivity(intent)
     }
 
-    private fun freeData(){
+    fun freeData(){
         context = null
         VisualsUpdater.activity = null
         TimeHandler.context = null
+        VisualsUpdater.dialogFragmentContainer = null
     }
 }

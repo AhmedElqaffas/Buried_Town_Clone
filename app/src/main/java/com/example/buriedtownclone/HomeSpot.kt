@@ -6,7 +6,7 @@ class HomeSpot: Spot() {
     var farmLevel: Int = 0
 
     override fun saveInDatabase() {
-        var database = Database()
+        val database = Database()
         database.saveHomeSpot(this)
     }
 

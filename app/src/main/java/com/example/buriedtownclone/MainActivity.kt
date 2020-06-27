@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.google.common.collect.LinkedHashMultimap
 import kotlinx.android.synthetic.main.new_game.*
 
 class MainActivity : AppCompatActivity() {

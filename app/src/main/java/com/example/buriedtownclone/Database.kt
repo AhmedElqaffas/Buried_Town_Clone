@@ -106,32 +106,38 @@ class Database{
     }
 
     fun getHunger(): Int{
-        var hungerQuery: Cursor = database.rawQuery(getQuantityQuery
+        val hungerQuery: Cursor = database.rawQuery(getQuantityQuery
             ("stats","hunger","stat"), null)
             hungerQuery.moveToFirst()
-            return hungerQuery.getString(0).toInt()
+            val hunger = hungerQuery.getString(0).toInt()
+            hungerQuery.close()
+            return hunger
     }
     fun getThirst(): Int{
-        var thirstQuery: Cursor = database.rawQuery(getQuantityQuery
+        val thirstQuery: Cursor = database.rawQuery(getQuantityQuery
             ("stats","thirst","stat"), null)
         thirstQuery.moveToFirst()
-        return thirstQuery.getString(0).toInt()
+        val thirst = thirstQuery.getString(0).toInt()
+        thirstQuery.close()
+        return thirst
     }
 
     fun saveCity(locationX: Int, locationY: Int){
         database.execSQL("INSERT INTO cities values($locationX,$locationY)")
     }
 
-    fun getSpotsInCity(city: City): MutableList<Spot>{
-        var spotsQueryResult: Cursor = database.rawQuery(getSpotsQuery(city), null)
-        return formSpotsObjects(spotsQueryResult)
+    private fun getSpotsInCity(city: City): MutableList<Spot>{
+        val spotsQueryResult: Cursor = database.rawQuery(getSpotsQuery(city), null)
+        val spotsList = formSpotsObjects(spotsQueryResult)
+        spotsQueryResult.close()
+        return spotsList
     }
     private fun getSpotsQuery(city: City): String{
         return "SELECT * FROM spots LEFT JOIN home ON spots.type = home.type_home WHERE city_x = ${city.locationX} " +
                 "and city_y = ${city.locationY}"
     }
     private fun formSpotsObjects(results: Cursor): MutableList<Spot>{
-        var spotsObjects: MutableList<Spot> = mutableListOf()
+        val spotsObjects: MutableList<Spot> = mutableListOf()
         results.moveToFirst()
         while(!results.isAfterLast){
             spotsObjects.add(formSpot(results))
@@ -141,9 +147,8 @@ class Database{
     }
     private fun formSpot(queryRow: Cursor): Spot{
 
-        var spot: Spot
+        val spot: Spot
         val spotType = queryRow.getString(queryRow.getColumnIndex("type"))
-        println(spotType)
         spot = if(spotType == Definitions.home){
             HomeSpot()
         } else{
@@ -153,8 +158,8 @@ class Database{
         return spot
     }
     fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
-        var itemsInsideHashMap = linkedMapOf<Item, String>()
-        var itemsInsideSpotText = getItemMapString(query)
+        val itemsInsideHashMap = linkedMapOf<Item, String>()
+        val itemsInsideSpotText = getItemMapString(query)
         try {
             val json = JSONObject(itemsInsideSpotText)
             val names: JSONArray = json.names()
@@ -197,18 +202,18 @@ class Database{
                 "${homeSpot.farmLevel})")
     }
     private fun serializeItemMap(itemMap: LinkedHashMap<Item,String>): String{
-        var serializedMap = linkedMapOf<String, String>()
+        val serializedMap = linkedMapOf<String, String>()
         for(entry in itemMap){
-            var serializedEntry = serializeEntry(entry)
-            serializedMap.put(serializedEntry[0], serializedEntry[1])
+            val serializedEntry = serializeEntry(entry)
+            serializedMap[serializedEntry[0]] = serializedEntry[1]
         }
         val gson = Gson()
         return gson.toJson(serializedMap)
     }
     private fun serializeEntry(entry: MutableMap.MutableEntry<Item, String>):
             Array<String> {
-        var serializedKey = serializeClassName(entry.key)
-        var quantity = entry.value
+        val serializedKey = serializeClassName(entry.key)
+        val quantity = entry.value
         return arrayOf(serializedKey,quantity)
 
 
@@ -223,7 +228,7 @@ class Database{
                 " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
     }
     fun updateSpotItems(spot: Spot){
-        var serializedItemsMap = serializeItemMap(spot.itemsInside)
+        val serializedItemsMap = serializeItemMap(spot.itemsInside)
         database.execSQL("UPDATE spots SET inner_items_map = '${serializedItemsMap}' " +
                 "WHERE index_within_city = ${spot.locationWithinCity}" +
                 " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
@@ -237,11 +242,11 @@ class Database{
         database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'hunger'")
     }
     fun setInventory(itemsMap: LinkedHashMap<Item,String>){
-        var serializedInventory = serializeItemMap(itemsMap)
+        val serializedInventory = serializeItemMap(itemsMap)
         database.execSQL("UPDATE stats SET quantity = '$serializedInventory' WHERE stat = 'inventory'")
     }
     fun getInventory(): LinkedHashMap<Item,String>{
-        var inventoryQuery: Cursor = database.rawQuery(getInventoryQuery(),null)
+        val inventoryQuery: Cursor = database.rawQuery(getInventoryQuery(),null)
         return extractInventory(inventoryQuery)
     }
     private fun getInventoryQuery(): String{
@@ -253,19 +258,19 @@ class Database{
         return unserializeItemsMap(results)
     }
     private fun unserializeInventory(itemMapText: String): LinkedHashMap<Item,String>{
-        var gson = Gson()
+        val gson = Gson()
         return gson.fromJson(itemMapText, LinkedHashMap<Item,String>().javaClass)
     }
 
     fun getCities(): MutableList<City>{
-        var citiesQueryResult: Cursor = database.rawQuery(getCitiesQuery(), null)
+        val citiesQueryResult: Cursor = database.rawQuery(getCitiesQuery(), null)
         return formCityResultsIntoObjects(citiesQueryResult)
     }
     private fun getCitiesQuery(): String{
         return "SELECT * FROM cities"
     }
     private fun formCityResultsIntoObjects(results: Cursor): MutableList<City>{
-        var cityObjects = mutableListOf<City>()
+        val cityObjects = mutableListOf<City>()
         results.moveToFirst()
         while(!results.isAfterLast){
             cityObjects.add(formCity(results))
@@ -274,14 +279,14 @@ class Database{
         return cityObjects
     }
     private fun formCity(result: Cursor): City{
-        var locationX = result.getInt(result.getColumnIndex("x_position"))
-        var locationY = result.getInt(result.getColumnIndex("y_position"))
-        var city = City(locationX,locationY)
+        val locationX = result.getInt(result.getColumnIndex("x_position"))
+        val locationY = result.getInt(result.getColumnIndex("y_position"))
+        val city = City(locationX,locationY)
         formSpotsWithinCity(city)
         return city
     }
     private fun formSpotsWithinCity(city: City){
-        var spotsInCity = getSpotsInCity(city)
+        val spotsInCity = getSpotsInCity(city)
         city.numberOfSpotsWithin = spotsInCity.size
         for (spot in spotsInCity){
             city.spots.add(spot)
@@ -289,14 +294,14 @@ class Database{
     }
 
     fun getPlayerLocation(): MutableList<Int>{
-        var locationQueryResult: Cursor = database.rawQuery(getLocationQuery(), null)
+        val locationQueryResult: Cursor = database.rawQuery(getLocationQuery(), null)
         return extractLocationFromQuery(locationQueryResult)
     }
     private fun getLocationQuery(): String{
         return "SELECT quantity FROM stats WHERE stat = 'x_position' or stat = 'y_position'"
     }
     private fun extractLocationFromQuery(query: Cursor): MutableList<Int>{
-        var locationList = mutableListOf<Int>()
+        val locationList = mutableListOf<Int>()
         query.moveToFirst()
         locationList.add(query.getString(query.getColumnIndex("quantity")).toInt())
         query.moveToNext()
