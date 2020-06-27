@@ -2,7 +2,6 @@ package com.example.buriedtownclone
 
 import android.os.Bundle
 import android.os.Handler
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -10,10 +9,10 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
 
     private var database = Database()
     var player =  Player()
-    var visualsUpdater =  VisualsUpdater()
-    lateinit var spotItemsFragment: ItemsFragment
-    lateinit var inventoryItemsFragment: ItemsFragment
-    lateinit var inventoryHelperFragment: InventoryHelper
+    private var visualsUpdater =  VisualsUpdater()
+    private lateinit var spotItemsFragment: ItemsFragment
+    private lateinit var inventoryItemsFragment: ItemsFragment
+    private lateinit var inventoryHelperFragment: InventoryHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -27,7 +26,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
         manageSpot()
         showInventoryHelperFragment()
 
-        var handler = Handler()
+        val handler = Handler()
         handler.postDelayed({
             setupCommunicationBetweenActivityAndFragments()
         }, 10)
@@ -46,7 +45,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun manageSpot(){
-        var currentSpot = getClickedSpotObject()
+        val currentSpot = getClickedSpotObject()
         showSpotItemsFragment(currentSpot)
         showInventoryFragment(player.getInventory())
 

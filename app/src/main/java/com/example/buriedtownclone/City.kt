@@ -15,7 +15,6 @@ class City(val locationX: Int,val locationY: Int) {
         else{
             numberOfSpotsWithin = (3..5).random();
         }
-
     }
 
     fun refreshSpotItems(spotToUpdate:Spot){

@@ -1,5 +1,6 @@
 package com.example.buriedtownclone
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,6 +25,7 @@ class DialogFragment : Fragment() {
     private lateinit var inflated: ConstraintLayout
     private lateinit var parentContainerLayout: ConstraintLayout
     private var listOfConversationDialogs: MutableList<MutableList<Any>> = mutableListOf()
+    private var communicationInterface : CommunicationInterface? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +39,22 @@ class DialogFragment : Fragment() {
         inflated =  inflater.inflate(R.layout.fragment_dialog, container, false) as ConstraintLayout
         val dialogTextView = inflated.findViewById<TextView>(R.id.dialog)
         dialogTextView.setOnClickListener {dialogClicked(dialogTextView)}
-
+        postThatFragmentIsReady()
         return inflated
+    }
+
+    interface CommunicationInterface{
+        fun onFragmentReady(){
+
+        }
+    }
+
+    fun setInterfaceListener(listener: CommunicationInterface){
+        this.communicationInterface = listener
+    }
+
+    private fun postThatFragmentIsReady(){
+        communicationInterface!!.onFragmentReady()
     }
 
     fun createWelcomingDialog(parentContainerLayout: ConstraintLayout){
@@ -50,7 +66,7 @@ class DialogFragment : Fragment() {
         goToNextDialog()
     }
 
-    fun dialogClicked(view: View){
+    private fun dialogClicked(view: View){
         try{
             goToNextDialog()
         }catch (ex: Exception){

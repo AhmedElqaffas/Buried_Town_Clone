@@ -55,7 +55,6 @@ class TimeHandler{
     }
     private fun decreaseHunger(){
 
-        println("/////// EXECUTED //////////")
         player.updateHunger(-1)
         visualUpdater.showStatsInStatsBar(player)
     }

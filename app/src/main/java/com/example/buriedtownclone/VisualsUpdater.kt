@@ -1,21 +1,24 @@
 package com.example.buriedtownclone
 
-import android.R
 import android.app.Activity
 import android.os.Handler
 import android.view.View
-import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.activity_game.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 
 
-class VisualsUpdater{
+class VisualsUpdater: DialogFragment.CommunicationInterface{
 
     private lateinit var statsBarFragment: StatsBarFragment
     private lateinit var dialogFragment: DialogFragment
+    private lateinit var parentContainerLayout: ConstraintLayout
+    private var coroutineJob = Job()
 
     companion object{
 
@@ -51,16 +54,21 @@ class VisualsUpdater{
 
     fun showWelcomingDialog(parentContainerLayout: ConstraintLayout, upperConstraint: View){
 
+        this.parentContainerLayout = parentContainerLayout
+
         if(!timeHandler.isStopped())
             timeHandler.stopTimer()
 
         isDialogActive = true
         createFragmentContainer()
-        customizeContainer(parentContainerLayout, upperConstraint)
+        customizeContainer(upperConstraint)
         loadDialogFragment()
+        dialogFragment.setInterfaceListener(this)
+        coroutineJob.invokeOnCompletion { startFragmentWelcomeDialog() }
 
-        var handler: Handler = Handler()
-        handler.postDelayed({dialogFragment.createWelcomingDialog(parentContainerLayout)},10)
+            /*coroutineJob = CoroutineScope(Main).launch {
+                startFragmentWelcomeDialog()
+            }*/
     }
 
     private fun createFragmentContainer(){
@@ -68,15 +76,15 @@ class VisualsUpdater{
         dialogFragmentContainer!!.id = View.generateViewId()
     }
 
-    private fun customizeContainer(parentContainerLayout: ConstraintLayout, upperConstraint: View ){
+    private fun customizeContainer(upperConstraint: View ){
 
-        parentContainerLayout!!.addView(dialogFragmentContainer)
+        parentContainerLayout.addView(dialogFragmentContainer)
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(parentContainerLayout)
         constraintSet.connect(dialogFragmentContainer!!.id, ConstraintSet.TOP, upperConstraint.id,
             ConstraintSet.TOP, 0)
-        constraintSet.connect(dialogFragmentContainer!!.id, ConstraintSet.BOTTOM, parentContainerLayout!!.id, ConstraintSet.BOTTOM, 0)
+        constraintSet.connect(dialogFragmentContainer!!.id, ConstraintSet.BOTTOM, parentContainerLayout.id, ConstraintSet.BOTTOM, 0)
         constraintSet.applyTo(parentContainerLayout)
 
         dialogFragmentContainer!!.layoutParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT
@@ -91,14 +99,20 @@ class VisualsUpdater{
             .commit()
     }
 
+    private fun startFragmentWelcomeDialog(){
+        dialogFragment.createWelcomingDialog(parentContainerLayout)
+    }
 
     fun hideDialog(parentContainerLayout: ConstraintLayout){
-        //isDialogActive = false
+        isDialogActive = false
         parentContainerLayout.removeView(dialogFragmentContainer)
-        dialogFragmentContainer = null
         dialogFragmentContainer = null
         if(timeHandler.isStopped())
              timeHandler.startTimer()
+    }
+
+    override fun onFragmentReady() {
+        coroutineJob.complete() // trigger invokeOnCompletion()
     }
 
 
