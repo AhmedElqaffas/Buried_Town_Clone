@@ -12,6 +12,8 @@ import android.widget.GridLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.LinkedListMultimap
 import java.lang.Integer.parseInt
 
 
@@ -124,7 +126,7 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
         }
     }
     private fun existsItemToPutInSlot(slotIndex: Int): Boolean{
-        return slotIndex < itemContainerType.itemsInside.size
+        return slotIndex < itemContainerType.itemsInside.size()
     }
 
     private fun addListener(slot: TextView, slotsFound: Int){
@@ -154,13 +156,12 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
 
     private fun reduceItemQuantity(slotIndex: Int){
         val newQuantity = getItemQuantity(slotIndex) - 1
-        setItemQuantity(slotIndex,newQuantity)
-        updateItemQuantityTextView(slotIndex, newQuantity)
-        refreshLayoutIfItemIsFinished(newQuantity)
+        itemContainerType.decrementItemQuantity(getItem(slotIndex))
+        /*updateItemQuantityTextView(slotIndex, newQuantity)
+        refreshLayoutIfItemIsFinished(newQuantity)*/
+        refreshLayout()
     }
-    private fun setItemQuantity(slotIndex: Int, newQuantity: Int){
-        itemContainerType.setItemQuantity(getItem(slotIndex), newQuantity)
-    }
+
     private fun refreshLayoutIfItemIsFinished(newQuantity: Int){
         if(newQuantity == 0){
             refreshLayout()
@@ -190,7 +191,7 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
     }
 
     private fun getItem(slotIndex: Int): Item {
-        return ArrayList<Item>(itemContainerType.itemsInside.keys)[slotIndex]
+        return itemContainerType.getItemAt(slotIndex)
     }
 
     private fun addItemQuantity(slotIndex: Int){
@@ -198,7 +199,7 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
         updateItemQuantityTextView(slotIndex,quantity)
     }
     private fun getItemQuantity(slotIndex: Int): Int{
-        val stringQuantity = ArrayList<String>(itemContainerType.itemsInside.values)[slotIndex]
+        val stringQuantity = itemContainerType.getQuantityOfItemAt(slotIndex)
         return parseInt(stringQuantity)
     }
 
@@ -207,7 +208,7 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
         slotView.text = quantity.toString()
     }
 
-    fun getItemsMap(): LinkedHashMap<Item,String>{
+    fun getItemsMap(): LinkedListMultimap<Item, String> {
         return itemContainerType.itemsInside
     }
 }

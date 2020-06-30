@@ -1,7 +1,6 @@
 package com.example.buriedtownclone
 
 import android.app.Activity
-import android.os.Handler
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -9,8 +8,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 
 
 class VisualsUpdater: DialogFragment.CommunicationInterface{

@@ -91,6 +91,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
         if(shouldConsumeItem()){
             if(itemsFragment.tag == "spot"){
                 spotItemsFragment.consumeItem(item,slotsFound,player)
+                updateSpotItemsInDatabase()
             }
             else{
                 inventoryItemsFragment.consumeItem(item,slotsFound,player)
@@ -102,11 +103,13 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
             if(itemsFragment.tag == "spot" && existsSlotForThisItem(inventoryItemsFragment ,item)){
                 spotItemsFragment.removeItem(slotsFound)
                 commitInventoryChangesToDatabase()
+                updateSpotItemsInDatabase()
             }
             else{
                 if(existsSlotForThisItem(spotItemsFragment, item)){
                     inventoryItemsFragment.removeItem(slotsFound)
                     commitInventoryChangesToDatabase()
+                    updateSpotItemsInDatabase()
                 }
             }
         }
@@ -122,5 +125,9 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
 
     private fun commitInventoryChangesToDatabase(){
         database.setInventory(inventoryItemsFragment.getItemsMap())
+    }
+
+    private fun updateSpotItemsInDatabase(){
+        database.updateSpotItems(getClickedSpotObject())
     }
 }

@@ -3,7 +3,7 @@ package com.example.buriedtownclone
 import android.app.Activity
 import android.content.Intent
 
-class GameHandler {
+class GameHandler() {
 
 
 
@@ -15,9 +15,8 @@ class GameHandler {
         var isGameFinished = false
     }
 
-    constructor(){
+    init {
         isGameFinished = false
-
     }
 
     fun endGame(){

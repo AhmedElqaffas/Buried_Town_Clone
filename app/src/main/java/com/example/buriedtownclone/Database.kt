@@ -3,9 +3,12 @@ package com.example.buriedtownclone
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.LinkedListMultimap
 import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 
 class Database{
 
@@ -157,21 +160,23 @@ class Database{
         spot.formObject(queryRow)
         return spot
     }
-    fun unserializeItemsMap(query: Cursor): LinkedHashMap<Item, String>{
-        val itemsInsideHashMap = linkedMapOf<Item, String>()
+    fun unserializeItemsMap(query: Cursor): LinkedListMultimap<Item, String>{
+        val itemsInsideMap: LinkedListMultimap<Item, String> = LinkedListMultimap.create()
         val itemsInsideSpotText = getItemMapString(query)
         try {
             val json = JSONObject(itemsInsideSpotText)
             val names: JSONArray = json.names()
             for (i in 0 until names.length()) {
-                val key = names.getString(i)
-                itemsInsideHashMap.put(Class.forName(key).newInstance() as Item, json.opt(key).toString())
+                val jsonKey = names.getString(i) // retrieve exact key string from database
+                val linkedListKey = convertKeyStringToClassString(jsonKey)
+                    itemsInsideMap.put(linkedListKey.newInstance() as Item,
+                        json.opt(jsonKey).toString())
             }
         } catch (e: Exception) {
-            return itemsInsideHashMap
+            return itemsInsideMap
         }
 
-        return itemsInsideHashMap
+        return itemsInsideMap
 
     }
     /* If this is a stats table query, it gets the 'quantity' field
@@ -183,8 +188,14 @@ class Database{
         }else{
             query.getString(query.getColumnIndex("inner_items_map"))
         }
+    }
 
-
+    /*
+        Removes the hash code and our unique identifier from the string retrieved and convert the remaining
+         string to class
+     */
+    private fun convertKeyStringToClassString(string: String): Class<*> {
+        return Class.forName(string.substringBefore("@"))
     }
 
     fun saveHomeSpot(homeSpot: HomeSpot){
@@ -201,25 +212,34 @@ class Database{
         database.execSQL("INSERT INTO home values('${homeSpot.spotType}'," +
                 "${homeSpot.farmLevel})")
     }
-    private fun serializeItemMap(itemMap: LinkedHashMap<Item,String>): String{
-        val serializedMap = linkedMapOf<String, String>()
-        for(entry in itemMap){
-            val serializedEntry = serializeEntry(entry)
-            serializedMap[serializedEntry[0]] = serializedEntry[1]
+    private fun serializeItemMap(itemMap: LinkedListMultimap<Item, String>): String{
+        val serializedMap = linkedMapOf<String?, String?>()
+        for(entry in itemMap.entries()){
+            //val serializedEntry = serializeEntry(entry)
+            serializedMap[getItemKey(entry)] = entry.value
         }
         val gson = Gson()
         return gson.toJson(serializedMap)
     }
+
+    /* The item.toString generates something like com.example.buriedtownclone.Tuna@hashCodeNumber
+       The hashCodeNumber isn't always unique, so we have to make it unique by appending unique string to it
+       We need to make it unique because JSON doesn't allow duplicate keys and will only keep the last key found
+       of the duplicate ones
+     */
+    private fun getItemKey(entry: MutableMap.MutableEntry<Item, String>): String{
+        return entry.key.toString()+ UUID.randomUUID()
+    }
     private fun serializeEntry(entry: MutableMap.MutableEntry<Item, String>):
-            Array<String> {
+            Array<String?> {
         val serializedKey = serializeClassName(entry.key)
         val quantity = entry.value
         return arrayOf(serializedKey,quantity)
 
 
     }
-    private fun serializeClassName(itemClass: Item): String{
-        return itemClass::class.qualifiedName!!
+    private fun serializeClassName(itemClass: Item): String?{
+        return itemClass::class.qualifiedName
     }
 
     fun updateSpotVisit(spot: Spot){
@@ -241,11 +261,11 @@ class Database{
     fun setHunger(value: Int){
         database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'hunger'")
     }
-    fun setInventory(itemsMap: LinkedHashMap<Item,String>){
+    fun setInventory(itemsMap: LinkedListMultimap<Item,String>){
         val serializedInventory = serializeItemMap(itemsMap)
         database.execSQL("UPDATE stats SET quantity = '$serializedInventory' WHERE stat = 'inventory'")
     }
-    fun getInventory(): LinkedHashMap<Item,String>{
+    fun getInventory(): LinkedListMultimap<Item,String>{
         val inventoryQuery: Cursor = database.rawQuery(getInventoryQuery(),null)
         return extractInventory(inventoryQuery)
     }
@@ -253,13 +273,14 @@ class Database{
         return "SELECT quantity FROM stats WHERE stat = 'inventory'"
     }
 
-    private fun extractInventory(results: Cursor):  LinkedHashMap<Item,String>{
+    private fun extractInventory(results: Cursor):  LinkedListMultimap<Item,String>{
         results.moveToFirst()
+        println("EXTRACTING INVENTORY:")
         return unserializeItemsMap(results)
     }
-    private fun unserializeInventory(itemMapText: String): LinkedHashMap<Item,String>{
+    private fun unserializeInventory(itemMapText: String): LinkedHashMultimap<Item,String>{
         val gson = Gson()
-        return gson.fromJson(itemMapText, LinkedHashMap<Item,String>().javaClass)
+        return gson.fromJson(itemMapText, LinkedHashMultimap::class.java) as LinkedHashMultimap<Item, String>
     }
 
     fun getCities(): MutableList<City>{

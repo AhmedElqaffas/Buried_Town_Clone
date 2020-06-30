@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.google.common.collect.LinkedHashMultimap
+import com.google.common.collect.LinkedListMultimap
 import java.lang.Exception
 
 // TODO: Rename parameter arguments, choose names that match
@@ -145,11 +147,11 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         spot.locationWithinCity = indexWithinCity
         spot.visited = false
         spot.spotType = spotType
-        spot.itemsInside = if(spotType == Definitions.home) linkedMapOf() else generateItemsInsideSpot()
+        spot.itemsInside = if(spotType == Definitions.home) LinkedListMultimap.create() else generateItemsInsideSpot()
         return spot
     }
-    private fun generateItemsInsideSpot(): LinkedHashMap<Item,String>{
-        var itemsMap: LinkedHashMap<Item,String> = linkedMapOf()
+    private fun generateItemsInsideSpot(): LinkedListMultimap<Item,String>{
+        var itemsMap: LinkedListMultimap<Item,String> = LinkedListMultimap.create()
         itemsMap.put(Tuna(),"10")
         itemsMap.put(Apple(),"1")
         itemsMap.put(Water(),"2")
@@ -227,7 +229,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     private fun updateSpotItems(data: Intent?){
         var spotVisited = getVisitedSpotObject(data)
         updateCityObject(spotVisited)
-        updateSpotItemsInDatabase(spotVisited)
+        //updateSpotItemsInDatabase(spotVisited)
     }
     private fun getVisitedSpotObject(data: Intent?): Spot{
         return data!!.getSerializableExtra("spot") as Spot
