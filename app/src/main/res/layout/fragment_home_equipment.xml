@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".HomeEquipmentFragment"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:id="@+id/homeInnerLayout">
+
+    <ImageView
+        android:id="@+id/imageHotspots"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/home_inside_hotspots"
+        android:visibility="visible"
+        android:scaleType="fitXY"/>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/home_inside"
+        android:scaleType="fitXY"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
