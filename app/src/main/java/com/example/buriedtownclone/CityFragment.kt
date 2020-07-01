@@ -9,45 +9,44 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.LinkedListMultimap
 import java.lang.Exception
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+//private const val ARG_PARAM1 = "param1"
+//private const val ARG_PARAM2 = "param2"
 
 
-class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
+class CityFragment(private val city: City, private val isNewCity: Boolean): Fragment(){
 
-    val buildingsProbabilities: HashMap<Int, Double> = hashMapOf(R.drawable.house to 0.4,
+    private val buildingsProbabilities: HashMap<Int, Double> = hashMapOf(R.drawable.house to 0.4,
         R.drawable.workshop to 0.2, R.drawable.school to 0.2, R.drawable.pharmacy to 0.1,
         R.drawable.police_station to 0.1)
 
-    val stringToSpotImage: HashMap<String, Int> = hashMapOf(Definitions.house to R.drawable.house,
+    private val stringToSpotImage: HashMap<String, Int> = hashMapOf(Definitions.house to R.drawable.house,
     Definitions.school to R.drawable.school, Definitions.pharmacy to R.drawable.pharmacy,
     Definitions.policeStation to R.drawable.police_station, Definitions.workshop to R.drawable.workshop,
     Definitions.home to R.drawable.home)
 
-    val spotImageToString: HashMap<Int, String> = hashMapOf(R.drawable.house to Definitions.house,
+    private val spotImageToString: HashMap<Int, String> = hashMapOf(R.drawable.house to Definitions.house,
         R.drawable.school to Definitions.school , R.drawable.pharmacy to Definitions.pharmacy ,
         R.drawable.police_station to Definitions.policeStation , R.drawable.workshop to Definitions.workshop,
         R.drawable.home to Definitions.home)
 
     var database = Database()
 
-    // TODO: Rename and change types of parameters
+    /*// TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+*/
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-    }
+    }*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -72,20 +71,19 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun createCity(inflated: View){
-        var chosenBuildingsImages: MutableList<Int> = randomizeSpotsBuildings()
+        val chosenBuildingsImages: MutableList<Int> = randomizeSpotsBuildings()
         setImageViewsImagesAndListeners(chosenBuildingsImages, inflated as ConstraintLayout)
-        var citySpotsList = createCitySpots(chosenBuildingsImages)
+        val citySpotsList = createCitySpots(chosenBuildingsImages)
         saveSpots(citySpotsList)
     }
     private fun randomizeSpotsBuildings(): MutableList<Int>{
         val chosenBuildingsList: MutableList<Int> = mutableListOf()
         var buildingImageId: Int
         for (i in 0 until city.numberOfSpotsWithin) {
-            if(isHomeSpot(i)){
-                buildingImageId = R.drawable.home
-            }
-            else {
-                buildingImageId = getRandomBuildingBasedOnProbability()
+            buildingImageId = if(isHomeSpot(i)){
+                R.drawable.home
+            } else {
+                getRandomBuildingBasedOnProbability()
             }
                 chosenBuildingsList.add(buildingImageId)
         }
@@ -107,7 +105,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
             if (countWeight >= r)
                 return building.key
         }
-        throw RuntimeException("Should never be shown.");
+        throw RuntimeException("Should never be shown.")
     }
 
     private fun setImageViewsImagesAndListeners(buildingsImagesId: MutableList<Int>,
@@ -124,7 +122,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun createCitySpots(chosenBuildingsImages: MutableList<Int>): MutableList<Spot>{
-        var spotObjectsList = mutableListOf<Spot>()
+        val spotObjectsList = mutableListOf<Spot>()
         for(i in 0 until chosenBuildingsImages.size){
             spotObjectsList.add(createSpotObject(i,
                 convertImageResourceToString(chosenBuildingsImages[i])))
@@ -135,13 +133,11 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         return spotImageToString[resource]!!
     }
     private fun createSpotObject(indexWithinCity: Int, spotType: String): Spot{
-        var spot: Spot
-        if(spotType == "home"){
-            spot = HomeSpot()
-        }
-        else{
-            spot = NormalSpot()
-        }
+        val spot = if(spotType == "home"){
+                        HomeSpot()
+                    } else{
+                        NormalSpot()
+                    }
         spot.cityX = city.locationX
         spot.cityY = city.locationY
         spot.locationWithinCity = indexWithinCity
@@ -151,11 +147,13 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
         return spot
     }
     private fun generateItemsInsideSpot(): LinkedListMultimap<Item,String>{
-        var itemsMap: LinkedListMultimap<Item,String> = LinkedListMultimap.create()
+        val itemsMap: LinkedListMultimap<Item,String> = LinkedListMultimap.create()
         itemsMap.put(Tuna(),"10")
         itemsMap.put(Apple(),"1")
         itemsMap.put(Water(),"2")
         itemsMap.put(mm9(),"7")
+        itemsMap.put(Wood(), "2")
+        itemsMap.put(Nail(), "3")
         return itemsMap
     }
     private fun saveSpots(citySpotsList: MutableList<Spot>){
@@ -166,7 +164,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun loadCity(city: City, inflated: View){
-        var spotsList: MutableList<Spot> = getSpotsInCity(city)
+        val spotsList: MutableList<Spot> = getSpotsInCity(city)
         loadSpots(spotsList, inflated as ConstraintLayout)
     }
     private fun getSpotsInCity(city: City): MutableList<Spot>{
@@ -174,7 +172,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
     }
 
     private fun loadSpots(spotsList: MutableList<Spot>, layout: ConstraintLayout){
-        var spotsDrawn: Int = 0
+        var spotsDrawn = 0
         for (i in 0 until layout.childCount) {
             val subView: View = layout.getChildAt(i)
             if (subView is ImageView){
@@ -191,15 +189,15 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
 
     }
     private fun getSpotIndex(view: View): Int{
-        var imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
+        val imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
         return imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
     }
 
     private fun goToActivity(index: Int){
         val activity = city.spots[index].getActivityToOpen()
         val requestCode = city.spots[index].getActivityRequestCode()
-        var intent = Intent(context, activity)
-        intent.putExtra("spot",city.spots[index])
+        val intent = Intent(context, activity)
+        intent.putExtra(Definitions.spotItems,city.spots[index])
         this.startActivityForResult(intent, requestCode)
     }
 
@@ -227,7 +225,7 @@ class CityFragment(val city: City, val isNewCity: Boolean): Fragment(){
      * original object
      */
     private fun updateSpotItems(data: Intent?){
-        var spotVisited = getVisitedSpotObject(data)
+        val spotVisited = getVisitedSpotObject(data)
         updateCityObject(spotVisited)
         //updateSpotItemsInDatabase(spotVisited)
     }

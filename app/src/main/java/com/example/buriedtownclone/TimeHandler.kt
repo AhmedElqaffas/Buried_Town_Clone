@@ -70,7 +70,6 @@ class TimeHandler{
         acceleratedHungerDecrease()
     }
     private fun acceleratedThirstDecrease(){
-        println("ACCELERATED///////////////////")
         navigationThirstDecrease = Runnable {
             decreaseThirst()
             if(player.getThirst() <= 0){

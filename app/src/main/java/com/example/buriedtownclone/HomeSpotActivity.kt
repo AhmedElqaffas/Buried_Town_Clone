@@ -7,6 +7,7 @@ class HomeSpotActivity : AppCompatActivity() {
 
     var database = Database()
     var player = Player()
+    private lateinit var homeEquipmentFragment: HomeEquipmentFragment
    // var visualsUpdater =  VisualsUpdater()
     //var gameHandler = GameHandler()
 
@@ -25,6 +26,7 @@ class HomeSpotActivity : AppCompatActivity() {
 
         manageSpot()
         showStatsBarFragment()
+        showHomeEquipmentFragment()
     }
 
     private fun manageSpot(){
@@ -32,7 +34,7 @@ class HomeSpotActivity : AppCompatActivity() {
         setSpotAsVisited(currentSpot)
     }
     private fun getClickedSpotObject(): Spot{
-        return intent.getSerializableExtra("spot") as Spot
+        return intent.getSerializableExtra(Definitions.spotItems) as Spot
     }
 
     private fun showStatsBarFragment(){
@@ -42,5 +44,10 @@ class HomeSpotActivity : AppCompatActivity() {
 
     private fun setSpotAsVisited(spot: Spot){
         spot.visited()
+    }
+
+    private fun showHomeEquipmentFragment(){
+        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, HomeEquipmentFragment(),"home")
+            .commit()
     }
 }

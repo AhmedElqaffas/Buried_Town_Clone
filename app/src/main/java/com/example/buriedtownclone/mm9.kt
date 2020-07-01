@@ -1,6 +1,5 @@
 package com.example.buriedtownclone
 
-class mm9: Ammo {
-    constructor(): super("9mm", R.drawable.mm92){}
+class mm9() : Ammo("9mm", R.drawable.mm92) {
 
 }

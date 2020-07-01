@@ -62,10 +62,6 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
         loadDialogFragment()
         dialogFragment.setInterfaceListener(this)
         coroutineJob.invokeOnCompletion { startFragmentWelcomeDialog() }
-
-            /*coroutineJob = CoroutineScope(Main).launch {
-                startFragmentWelcomeDialog()
-            }*/
     }
 
     private fun createFragmentContainer(){

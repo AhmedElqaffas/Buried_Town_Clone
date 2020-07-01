@@ -34,7 +34,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     override fun onBackPressed() {
-        intent.putExtra("spot", getClickedSpotObject())
+        intent.putExtra(Definitions.spotItems, getClickedSpotObject())
         setResult(RESULT_OK, intent)
         finish()
     }
@@ -53,17 +53,17 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun getClickedSpotObject(): Spot{
-        return intent.getSerializableExtra("spot") as Spot
+        return intent.getSerializableExtra(Definitions.spotItems) as Spot
     }
 
     private fun showSpotItemsFragment(container: ItemsContainer){
         supportFragmentManager.beginTransaction().replace(R.id.spotItemsContainer,
-            ItemsFragment(container), "spot")
+            ItemsFragment(container), Definitions.spotItems)
             .commit()
     }
     private fun showInventoryFragment(container: ItemsContainer){
         supportFragmentManager.beginTransaction().replace(R.id.inventoryContainer,
-            ItemsFragment(container), "inventory")
+            ItemsFragment(container), Definitions.inventoryItems)
             .commit()
     }
 
@@ -81,15 +81,15 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun initializeFragments(){
-        spotItemsFragment = supportFragmentManager.findFragmentByTag("spot")!! as ItemsFragment
-        inventoryItemsFragment = supportFragmentManager.findFragmentByTag("inventory")!! as ItemsFragment
+        spotItemsFragment = supportFragmentManager.findFragmentByTag(Definitions.spotItems)!! as ItemsFragment
+        inventoryItemsFragment = supportFragmentManager.findFragmentByTag(Definitions.inventoryItems)!! as ItemsFragment
         inventoryHelperFragment = supportFragmentManager.findFragmentByTag("inventory helper")!! as InventoryHelper
 
     }
 
     override fun onItemClicked(item: Item, slotsFound: Int, itemsFragment: ItemsFragment) {
         if(shouldConsumeItem()){
-            if(itemsFragment.tag == "spot"){
+            if(itemsFragment.tag == Definitions.spotItems){
                 spotItemsFragment.consumeItem(item,slotsFound,player)
                 updateSpotItemsInDatabase()
             }
@@ -100,17 +100,15 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
             visualsUpdater.showStatsInStatsBar(player)
         }
         else{ // should swap item from spot to inventory and vice versa
-            if(itemsFragment.tag == "spot" && existsSlotForThisItem(inventoryItemsFragment ,item)){
+            if(itemsFragment.tag == Definitions.spotItems && existsSlotForThisItem(inventoryItemsFragment ,item)){
                 spotItemsFragment.removeItem(slotsFound)
                 commitInventoryChangesToDatabase()
                 updateSpotItemsInDatabase()
             }
-            else{
-                if(existsSlotForThisItem(spotItemsFragment, item)){
-                    inventoryItemsFragment.removeItem(slotsFound)
-                    commitInventoryChangesToDatabase()
-                    updateSpotItemsInDatabase()
-                }
+            else if(itemsFragment.tag == Definitions.inventoryItems && existsSlotForThisItem(spotItemsFragment ,item)){
+                inventoryItemsFragment.removeItem(slotsFound)
+                commitInventoryChangesToDatabase()
+                updateSpotItemsInDatabase()
             }
         }
     }

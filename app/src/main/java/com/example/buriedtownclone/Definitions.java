@@ -1,7 +1,5 @@
 package com.example.buriedtownclone;
 
-import static java.lang.Math.floor;
-
 public final class Definitions {
     static String policeStation = "police_station";
     static String pharmacy = "pharmacy";
@@ -14,7 +12,7 @@ public final class Definitions {
     static String spotItems = "spot";
     static String inventoryItems = "inventory";
     static String mm9 = "9mm";
-    static String apples = "Apples";
+    static String apple = "Apples";
     static String water = "Water";
     static String tuna = "Tuna";
     static int numberOfSlotsInSpot = 10;

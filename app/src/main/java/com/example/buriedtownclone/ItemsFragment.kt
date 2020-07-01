@@ -12,7 +12,6 @@ import android.widget.GridLayout
 import android.widget.TextView
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.LinkedListMultimap
 import java.lang.Integer.parseInt
 
@@ -155,18 +154,10 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
     }
 
     private fun reduceItemQuantity(slotIndex: Int){
-        val newQuantity = getItemQuantity(slotIndex) - 1
-        itemContainerType.decrementItemQuantity(getItem(slotIndex))
-        /*updateItemQuantityTextView(slotIndex, newQuantity)
-        refreshLayoutIfItemIsFinished(newQuantity)*/
+        itemContainerType.decrementItemQuantity(slotIndex)
         refreshLayout()
     }
 
-    private fun refreshLayoutIfItemIsFinished(newQuantity: Int){
-        if(newQuantity == 0){
-            refreshLayout()
-        }
-    }
     private fun refreshLayout(){
         resetSlots()
         setupSlotViews()
