@@ -66,7 +66,7 @@ class Database{
                 "CONSTRAINT fk FOREIGN KEY(city_x, city_y) REFERENCES cities(x_position, y_position))")
     }
     private fun createHomeSpotTable(){
-        database.execSQL("CREATE TABLE IF NOT EXISTS home(type_home VARCHAR(50), farm_level TINYINT, " +
+        database.execSQL("CREATE TABLE IF NOT EXISTS home(type_home VARCHAR(50), equipment TEXT, " +
                 "CONSTRAINT pk PRIMARY KEY (type_home), " +
                 "CONSTRAINT home_foreign_key FOREIGN KEY (type_home) REFERENCES spots(type))")
     }
@@ -209,13 +209,13 @@ class Database{
                 "${spot.cityX}, ${spot.cityY},'$itemsInsideText', ${isVisitedInt}, '${spot.spotType}')")
     }
     private fun addHomeDetails(homeSpot: HomeSpot){
+        val serializedEquipmentList = serializeEquipmentList()
         database.execSQL("INSERT INTO home values('${homeSpot.spotType}'," +
-                "${homeSpot.farmLevel})")
+                "'${serializedEquipmentList}')")
     }
     private fun serializeItemMap(itemMap: LinkedListMultimap<Item, String>): String{
         val serializedMap = linkedMapOf<String?, String?>()
         for(entry in itemMap.entries()){
-            //val serializedEntry = serializeEntry(entry)
             serializedMap[getItemKey(entry)] = entry.value
         }
         val gson = Gson()
@@ -230,16 +230,13 @@ class Database{
     private fun getItemKey(entry: MutableMap.MutableEntry<Item, String>): String{
         return entry.key.toString()+ UUID.randomUUID()
     }
-    private fun serializeEntry(entry: MutableMap.MutableEntry<Item, String>):
-            Array<String?> {
-        val serializedKey = serializeClassName(entry.key)
-        val quantity = entry.value
-        return arrayOf(serializedKey,quantity)
-
-
+    private fun serializeEquipmentList(): String{
+        return Gson().toJson(HomeSpot.equipmentList)
     }
-    private fun serializeClassName(itemClass: Item): String?{
-        return itemClass::class.qualifiedName
+
+    fun updateHomeEquipment(){
+        val serializedEquipmentList = serializeEquipmentList()
+        database.execSQL("UPDATE home SET equipment = '$serializedEquipmentList'")
     }
 
     fun updateSpotVisit(spot: Spot){

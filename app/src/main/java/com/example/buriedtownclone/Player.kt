@@ -27,22 +27,6 @@ class Player() {
         locationY = location[1]
     }
 
-   /* fun setHunger(value: Int){
-        if(value == 0) {
-            gameHandler.endGame()
-        }
-        else{
-            hunger = value
-        }
-    }
-    fun setThirst(value: Int){
-        if(value == 0) {
-            gameHandler.endGame()
-        }
-        else{
-            thirst = value
-        }
-    }*/
    private fun setHealthPoints(value: Int){
         if(value == 0) {
             gameHandler.endGame()

@@ -214,9 +214,9 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
                 // TODO: Implement returning from home spot
             }
         }
-        else{
+        /*else{
             throw Exception("cityFragment onActivityResult: Problem updating city")
-        }
+        }*/
     }
 
     /**

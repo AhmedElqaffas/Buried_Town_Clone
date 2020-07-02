@@ -18,4 +18,9 @@ public final class Definitions {
     static int numberOfSlotsInSpot = 10;
     static int normalSpotRequestCode = 1;
     static int homeSpotRequestCode = 2;
+
+    public static String bedDescription = "Not the most fancy bed, but good enough to rest your body on. \n" +
+            "Sleeping recovers HP but you will wake up more hungry and thirsty.";
+
+    public static String greenhouseDescription = "A good place to plant. You can either plant food or herbs.";
 }

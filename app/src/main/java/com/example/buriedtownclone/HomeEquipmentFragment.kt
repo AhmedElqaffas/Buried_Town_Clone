@@ -1,5 +1,6 @@
 package com.example.buriedtownclone
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -7,36 +8,15 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import at.lukle.clickableareasimage.ClickableArea
-import at.lukle.clickableareasimage.ClickableAreasImage
-import at.lukle.clickableareasimage.OnClickableAreaClickedListener
 import kotlinx.android.synthetic.main.fragment_home_equipment.*
-import uk.co.senab.photoview.PhotoViewAttacher
-import java.lang.Math.abs
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class HomeEquipmentFragment : Fragment(){
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var inflated: ConstraintLayout
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val homeSpot = HomeSpot()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_home_equipment, container, false) as ConstraintLayout
@@ -57,15 +37,7 @@ class HomeEquipmentFragment : Fragment(){
         val eventY: Int = event.y.toInt()
 
         if(action == MotionEvent.ACTION_DOWN){
-            val touchColor = getHotspotColor (eventX, eventY)
-            val tolerance = 25
-            if(closeMatch (Color.GREEN, touchColor, tolerance)){
-                println("GREENHOUSE TOUCHED")
-            } else if(closeMatch (Color.WHITE, touchColor, tolerance)){
-                println("BED TOUCHED")
-            } else{
-                println("None")
-            }
+            checkClickedColor(eventX, eventY)
         }
 
         if(action == MotionEvent.ACTION_UP){
@@ -73,25 +45,57 @@ class HomeEquipmentFragment : Fragment(){
         }
         return true
     }
+
+    private fun checkClickedColor(eventX: Int, eventY: Int){
+        val touchColor = getHotspotColor (eventX, eventY)
+        when {
+            doColorsMatch(Color.GREEN, touchColor) -> {
+                handleGreenhouseClicked()
+            }
+            doColorsMatch(Color.WHITE, touchColor) -> {
+                handleBedClicked()
+            }
+            else -> {
+                println("None")
+            }
+        }
+    }
+    /**
+       Description: Gets the color of the pixel touched
+     */
     private fun getHotspotColor(x: Int, y: Int): Int {
         val image = imageHotspots
         image.isDrawingCacheEnabled = true
-        val hotspots: Bitmap = Bitmap.createBitmap(image.getDrawingCache())
-        image.setDrawingCacheEnabled(false)
+        val hotspots: Bitmap = Bitmap.createBitmap(image.drawingCache)
+        image.isDrawingCacheEnabled = false
         return hotspots.getPixel(x, y)
     }
 
-    private fun closeMatch(color1: Int, color2: Int, tolerance: Int): Boolean {
-        if (abs(Color.red(color1) - Color.red(color2)) > tolerance) {
-            return false
-        }
-        if (abs(Color.green(color1) - Color.green(color2)) > tolerance) {
-            return false
-        }
-        if (abs(Color.blue(color1) - Color.blue(color2)) > tolerance) {
-            return false
-        }
-        return true
+    /**
+       Description: Colors may differ a little from a screen to another so we use a tolerance to check whether
+        the color clicked is nearly one of the anticipated colors or not
+     */
+    private fun doColorsMatch(anticipatedColor: Int, touchedColor: Int): Boolean {
+        val tolerance = 25
+        return !(kotlin.math.abs(Color.red(anticipatedColor) - Color.red(touchedColor)) > tolerance
+            || kotlin.math.abs(Color.green(anticipatedColor) - Color.green(touchedColor)) > tolerance
+            || kotlin.math.abs(Color.blue(anticipatedColor) - Color.blue(touchedColor)) > tolerance)
+    }
+
+    private fun handleGreenhouseClicked(){
+        val intent = Intent(context, EquipmentActivity::class.java)
+        intent.putExtra("equipment", homeSpot.getEquipment("Greenhouse"))
+        startActivity(intent)
+    }
+
+    private fun handleBedClicked(){
+        val intent = Intent(context, EquipmentActivity::class.java)
+        intent.putExtra("equipment", homeSpot.getEquipment("Bed"))
+        startActivity(intent)
+    }
+
+    fun saveEquipment(){
+        homeSpot.updateEquipmentInDatabase()
     }
 
 

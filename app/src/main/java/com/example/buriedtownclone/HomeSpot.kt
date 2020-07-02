@@ -1,18 +1,23 @@
 package com.example.buriedtownclone
 
-import android.database.Cursor
+import com.example.buriedtownclone.homeequipment.Bed
+import com.example.buriedtownclone.homeequipment.Equipment
+import com.example.buriedtownclone.homeequipment.Greenhouse
 
 class HomeSpot: Spot() {
-    var farmLevel: Int = 0
+
+    companion object{
+        val equipmentList = mutableListOf<Equipment>(Greenhouse(), Bed())
+    }
 
     override fun saveInDatabase() {
         val database = Database()
         database.saveHomeSpot(this)
     }
 
-    override fun formObject(queryRow: Cursor) {
-        super.formObject(queryRow)
-        farmLevel = queryRow.getInt(queryRow.getColumnIndex("farm_level"))
+    fun updateEquipmentInDatabase(){
+        val database = Database()
+        database.updateHomeEquipment()
     }
 
    override fun getActivityToOpen(): Class<Any>{
@@ -21,5 +26,9 @@ class HomeSpot: Spot() {
 
     override fun getActivityRequestCode(): Int {
         return Definitions.homeSpotRequestCode
+    }
+
+    fun getEquipment(name: String): Equipment{
+        return equipmentList.single { it.name == name }
     }
 }
