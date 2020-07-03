@@ -1,7 +1,6 @@
 package com.example.buriedtownclone
 
-import android.app.Activity
-import android.content.Context
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,31 +9,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_dialog.*
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class DialogFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var inflated: ConstraintLayout
     private lateinit var parentContainerLayout: ConstraintLayout
     private var listOfConversationDialogs: MutableList<MutableList<Any>> = mutableListOf()
     private var communicationInterface : CommunicationInterface? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
+    override fun onPause() {
+        super.onPause()
+        endDialog()
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated =  inflater.inflate(R.layout.fragment_dialog, container, false) as ConstraintLayout
         val dialogTextView = inflated.findViewById<TextView>(R.id.dialog)
@@ -63,6 +50,16 @@ class DialogFragment : Fragment() {
         listOfConversationDialogs.add(mutableListOf(R.drawable.player_avatar,"An abandoned town ... at least I am away from Spongebob"))
         listOfConversationDialogs.add(mutableListOf(R.drawable.spongebob_laugh, "*A loud annoying laugh echoes* \n BA-HH-HH-HA-HA-HA"))
         listOfConversationDialogs.add(mutableListOf(R.drawable.player_avatar, "Oh, barnacles!"))
+        goToNextDialog()
+    }
+
+    fun createFirstHomeVisitDialog(parentContainerLayout: ConstraintLayout){
+        this.parentContainerLayout = parentContainerLayout
+        listOfConversationDialogs.clear()
+        listOfConversationDialogs.add(mutableListOf(R.drawable.player_avatar,"Hmmmm, looks like a suitable place to live in"))
+        listOfConversationDialogs.add(mutableListOf(R.drawable.player_avatar, "There is something down there"))
+        listOfConversationDialogs.add(mutableListOf(R.drawable.pistol_avatar, "You've found a pistol"))
+        listOfConversationDialogs.add(mutableListOf(R.drawable.player_avatar, "This should be useful"))
         goToNextDialog()
     }
 

@@ -14,6 +14,8 @@ class BedFragment : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
     private lateinit var bed: Bed
+    private val homeSpot = HomeSpot()
+    private val player = Player()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_bed, container, false) as ConstraintLayout
@@ -25,14 +27,20 @@ class BedFragment : Fragment() {
         setupFragment()
     }
 
+    override fun onPause() {
+        super.onPause()
+        homeSpot.updateEquipment(bed)
+
+    }
+
     private fun setupFragment(){
         initializeBedObject()
         setTitleLevel()
         setDescription()
+        setSleepButtonClickListener()
     }
 
     private fun initializeBedObject(){
-        val homeSpot = HomeSpot()
         bed = homeSpot.getEquipment("Bed") as Bed
     }
 
@@ -42,6 +50,20 @@ class BedFragment : Fragment() {
 
     private fun setDescription(){
         equipmentDescription.text = bed.description
+    }
+
+    private fun setSleepButtonClickListener(){
+        sleepButton.setOnClickListener { sleepButtonClicked() }
+    }
+
+    private fun sleepButtonClicked(){
+        updatePlayerStats()
+    }
+
+    private fun updatePlayerStats(){
+        player.updateHP(100)
+        player.updateThirst(-10)
+        player.updateHunger(-7)
     }
 
 }

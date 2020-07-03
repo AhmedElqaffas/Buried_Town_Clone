@@ -1,4 +1,10 @@
 package com.example.buriedtownclone
 
-class Weapon {
+import java.io.Serializable
+
+abstract class Weapon(name: String, imageResource: Int): Item(name, imageResource), Serializable{
+
+    override fun isConsumable():Boolean {
+        return false
+    }
 }

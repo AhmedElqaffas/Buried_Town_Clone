@@ -40,7 +40,7 @@ class TimeHandler{
     }
     private fun decreaseThirst(){
         player.updateThirst(-1)
-        visualUpdater.showStatsInStatsBar(player)
+        //visualUpdater.showStatsInStatsBar(player)
     }
 
     private fun decreaseHungerEveryFewSeconds(){
@@ -56,7 +56,7 @@ class TimeHandler{
     private fun decreaseHunger(){
 
         player.updateHunger(-1)
-        visualUpdater.showStatsInStatsBar(player)
+        //visualUpdater.showStatsInStatsBar(player)
     }
 
     fun stopTimer(){

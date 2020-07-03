@@ -26,7 +26,6 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
     }
 
     fun showStatsInStatsBar(player: Player){
-
         if(activity == null){ // If the game handler ended the game
             return
         }
@@ -35,7 +34,6 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
     }
 
     private fun getStatsBarFragment(){
-
         val fragmentActivity: FragmentActivity = activity as FragmentActivity
         statsBarFragment = fragmentActivity.supportFragmentManager.
         findFragmentByTag("stats bar") as StatsBarFragment
@@ -50,18 +48,24 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
 
 
     fun showWelcomingDialog(parentContainerLayout: ConstraintLayout, upperConstraint: View){
+        setupFragment(parentContainerLayout, upperConstraint)
+        coroutineJob.invokeOnCompletion { startFragmentWelcomeDialog() }
+    }
 
+    fun showFirstHomeVisitDialog(parentContainerLayout: ConstraintLayout, upperConstraint: View){
+        setupFragment(parentContainerLayout, upperConstraint)
+        coroutineJob.invokeOnCompletion { startFragmentFirstHomeVisitDialog() }
+    }
+
+    private fun setupFragment(parentContainerLayout: ConstraintLayout, upperConstraint: View){
         this.parentContainerLayout = parentContainerLayout
-
         if(!timeHandler.isStopped())
             timeHandler.stopTimer()
-
         isDialogActive = true
         createFragmentContainer()
         customizeContainer(upperConstraint)
         loadDialogFragment()
         dialogFragment.setInterfaceListener(this)
-        coroutineJob.invokeOnCompletion { startFragmentWelcomeDialog() }
     }
 
     private fun createFragmentContainer(){
@@ -95,6 +99,11 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
     private fun startFragmentWelcomeDialog(){
         dialogFragment.createWelcomingDialog(parentContainerLayout)
     }
+
+    private fun startFragmentFirstHomeVisitDialog(){
+        dialogFragment.createFirstHomeVisitDialog(parentContainerLayout)
+    }
+
 
     fun hideDialog(parentContainerLayout: ConstraintLayout){
         isDialogActive = false

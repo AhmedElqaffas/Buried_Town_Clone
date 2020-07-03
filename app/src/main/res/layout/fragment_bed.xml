@@ -33,7 +33,7 @@
         android:padding="15dp"/>
 
     <ImageButton
-        android:id="@+id/upgradeButton"
+        android:id="@+id/sleepButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/equipmentDescription"
@@ -44,7 +44,6 @@
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintWidth_percent="0.15"
         android:src="@drawable/sleep"
-        android:background="#FFFFFF"
         android:scaleType="fitXY"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

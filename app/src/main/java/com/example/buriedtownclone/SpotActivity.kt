@@ -97,7 +97,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
                 inventoryItemsFragment.consumeItem(item,slotsFound,player)
                 commitInventoryChangesToDatabase()
             }
-            visualsUpdater.showStatsInStatsBar(player)
+            //visualsUpdater.showStatsInStatsBar(player)
         }
         else{ // should swap item from spot to inventory and vice versa
             if(itemsFragment.tag == Definitions.spotItems && existsSlotForThisItem(inventoryItemsFragment ,item)){

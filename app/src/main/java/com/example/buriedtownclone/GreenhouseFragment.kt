@@ -14,10 +14,16 @@ class GreenhouseFragment : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
     private lateinit var greenhouse: Greenhouse
+    private val homeSpot = HomeSpot()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_greenhouse, container, false) as ConstraintLayout
         return inflated
+    }
+
+    override fun onPause() {
+        super.onPause()
+        homeSpot.updateEquipment(greenhouse)
     }
 
     override fun onResume() {
@@ -32,7 +38,6 @@ class GreenhouseFragment : Fragment() {
     }
 
     private fun initializeGreenHouseObject(){
-        val homeSpot = HomeSpot()
         greenhouse = homeSpot.getEquipment("Greenhouse") as Greenhouse
     }
 

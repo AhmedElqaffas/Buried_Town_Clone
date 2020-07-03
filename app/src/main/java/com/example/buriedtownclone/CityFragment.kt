@@ -186,8 +186,8 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
     private fun imageViewsClickListener(view: View){
         if(!VisualsUpdater.isDialogActive)
             goToActivity(getSpotIndex(view))
-
     }
+
     private fun getSpotIndex(view: View): Int{
         val imageIndexWithinParent = (view.parent as ViewGroup).indexOfChild(view)
         return imageIndexWithinParent - 4 // The first ImageView starts at index 4 at parent
@@ -211,12 +211,9 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
                 updateSpotItems(data)
             }
             else if (requestCode == Definitions.homeSpotRequestCode){
-                // TODO: Implement returning from home spot
+                setHomeSpotAsVisited()
             }
         }
-        /*else{
-            throw Exception("cityFragment onActivityResult: Problem updating city")
-        }*/
     }
 
     /**
@@ -234,6 +231,10 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
     }
     private fun updateCityObject(spotVisited: Spot){
         city.refreshSpotItems(spotVisited)
+    }
+
+    private fun setHomeSpotAsVisited(){
+        city.spots[2].visited()
     }
     private fun updateSpotItemsInDatabase(spotVisited: Spot){
         database.updateSpotItems(spotVisited)

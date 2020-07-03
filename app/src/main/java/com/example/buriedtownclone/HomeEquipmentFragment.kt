@@ -95,7 +95,7 @@ class HomeEquipmentFragment : Fragment(){
     }
 
     fun saveEquipment(){
-        homeSpot.updateEquipmentInDatabase()
+        //homeSpot.updateEquipmentInDatabase()
     }
 
 

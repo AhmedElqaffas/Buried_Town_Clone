@@ -13,6 +13,7 @@ class Player() {
 
         private var database: Database = Database()
         private var gameHandler = GameHandler()
+        private var visualsUpdater = VisualsUpdater()
     }
 
 
@@ -62,13 +63,25 @@ class Player() {
     fun getInventory(): Inventory{
         return inventory
     }
+
+    fun updateHP(hpBonus: Int){
+        hp += hpBonus
+        if(hp > 100)
+            hp = 100
+        else if(hp <= 0)
+            gameHandler.endGame()
+        visualsUpdater.showStatsInStatsBar(this)
+        database.setHP(hp)
+    }
+
     fun updateHunger(hungerBonus: Int){
         hunger += hungerBonus
         if(hunger > 100)
             hunger = 100
-        if(hunger <= 0) {
+        else if(hunger <= 0) {
             gameHandler.endGame()
         }
+        visualsUpdater.showStatsInStatsBar(this)
         database.setHunger(hunger)
     }
     fun updateThirst(thirstBonus: Int){
@@ -78,7 +91,13 @@ class Player() {
         if(thirst <= 0) {
             gameHandler.endGame()
         }
+        visualsUpdater.showStatsInStatsBar(this)
         database.setThirst(thirst)
+    }
+
+    fun addToInventory(item: Item, quantity: String){
+        inventory.itemsInside.put(item, quantity)
+        database.setInventory(inventory.itemsInside)
     }
 
 }

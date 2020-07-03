@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeSpotActivity"
-    android:background="@color/gameTheme">
+    android:background="@color/gameTheme"
+    android:id="@+id/homeSpotRootLayout">
 
     <FrameLayout
         android:id="@+id/statsBarContainer"

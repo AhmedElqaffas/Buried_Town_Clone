@@ -15,7 +15,17 @@ class HomeSpot: Spot() {
         database.saveHomeSpot(this)
     }
 
-    fun updateEquipmentInDatabase(){
+    fun updateEquipment(equipment: Equipment){
+        updateEquipmentList(equipment)
+        updateEquipmentInDatabase()
+    }
+
+    private fun updateEquipmentList(equipment: Equipment){
+        equipmentList.removeAll { it.name == equipment.name }
+        equipmentList.add(equipment)
+    }
+
+    private fun updateEquipmentInDatabase(){
         val database = Database()
         database.updateHomeEquipment()
     }

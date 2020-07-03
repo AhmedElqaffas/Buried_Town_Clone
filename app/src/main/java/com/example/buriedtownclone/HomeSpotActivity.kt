@@ -2,16 +2,17 @@ package com.example.buriedtownclone
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_home_spot.*
 
 class HomeSpotActivity : AppCompatActivity() {
 
     var database = Database()
     var player = Player()
+    val visualsUpdater = VisualsUpdater()
 
     override fun onBackPressed(){
         val homeEquipmentFragment = getEquipmentFragment()
-        homeEquipmentFragment.saveEquipment()
-        //setResult(RESULT_OK, intent)
+        setResult(RESULT_OK, intent)
         finish()
     }
 
@@ -36,7 +37,7 @@ class HomeSpotActivity : AppCompatActivity() {
 
     private fun manageSpot(){
         val currentSpot = getClickedSpotObject()
-        setSpotAsVisited(currentSpot)
+        manageFirstVisit(currentSpot)
     }
     private fun getClickedSpotObject(): Spot{
         return intent.getSerializableExtra(Definitions.spotItems) as Spot
@@ -47,8 +48,16 @@ class HomeSpotActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun setSpotAsVisited(spot: Spot){
-        spot.visited()
+    private fun manageFirstVisit(spot: Spot){
+        if(!spot.visited){
+            addPistolToInventory()
+            spot.visited()
+            visualsUpdater.showFirstHomeVisitDialog(homeSpotRootLayout, horizontalGuideline_endEquipment)
+        }
+    }
+
+    private fun addPistolToInventory(){
+        player.addToInventory(Pistol(), "1")
     }
 
     private fun showHomeEquipmentFragment(){

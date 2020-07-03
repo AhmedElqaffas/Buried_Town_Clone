@@ -251,6 +251,10 @@ class Database{
                 " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
     }
 
+    fun setHP(value: Int){
+        database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'hp'")
+    }
+
     fun setThirst(value: Int){
         database.execSQL("UPDATE stats SET quantity = '$value' WHERE stat = 'thirst'")
     }
