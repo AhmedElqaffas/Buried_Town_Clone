@@ -4,20 +4,16 @@ import android.content.Context
 import android.os.Handler
 
 
-class TimeHandler{
-    companion object{
+object TimeHandler{
 
-        var handler: Handler? = null
+    private var handler: Handler? = null
 
-        lateinit var thirstDecrease: Runnable
-        lateinit var hungerDecrease: Runnable
-        lateinit var navigationThirstDecrease: Runnable
-        lateinit var navigationHungerDecrease: Runnable
-        var context: Context? = null
-        private var stopped = true
-        private var player = Player()
-        private var visualUpdater = VisualsUpdater()
-    }
+    private lateinit var thirstDecrease: Runnable
+    private lateinit var hungerDecrease: Runnable
+    private lateinit var navigationThirstDecrease: Runnable
+    private lateinit var navigationHungerDecrease: Runnable
+    var context: Context? = null
+    private var stopped = true
 
 
 
@@ -31,7 +27,7 @@ class TimeHandler{
     private fun decreaseThirstEveryFewSeconds(){
         thirstDecrease = Runnable {
             decreaseThirst()
-            if(player.getThirst() <= 0){
+            if(Player.getThirst() <= 0){
                 return@Runnable
             }
             handler!!.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
@@ -39,14 +35,14 @@ class TimeHandler{
         handler!!.postDelayed(thirstDecrease,GameSettings.rateOfThirst)
     }
     private fun decreaseThirst(){
-        player.updateThirst(-1)
+        Player.updateThirst(-1)
         //visualUpdater.showStatsInStatsBar(player)
     }
 
     private fun decreaseHungerEveryFewSeconds(){
         hungerDecrease = Runnable {
             decreaseHunger()
-            if(player.getHunger() <= 0){
+            if(Player.getHunger() <= 0){
                 return@Runnable
             }
             handler!!.postDelayed(hungerDecrease,GameSettings.rateOfHunger)
@@ -55,7 +51,7 @@ class TimeHandler{
     }
     private fun decreaseHunger(){
 
-        player.updateHunger(-1)
+        Player.updateHunger(-1)
         //visualUpdater.showStatsInStatsBar(player)
     }
 
@@ -72,7 +68,7 @@ class TimeHandler{
     private fun acceleratedThirstDecrease(){
         navigationThirstDecrease = Runnable {
             decreaseThirst()
-            if(player.getThirst() <= 0){
+            if(Player.getThirst() <= 0){
                 return@Runnable
             }
             handler!!.postDelayed(navigationThirstDecrease,GameSettings.navigationRateOfThirst)
@@ -83,7 +79,7 @@ class TimeHandler{
     private fun acceleratedHungerDecrease(){
         navigationHungerDecrease = Runnable {
             decreaseHunger()
-            if(player.getHunger() <= 0){
+            if(Player.getHunger() <= 0){
                 return@Runnable
             }
             handler!!.postDelayed(navigationHungerDecrease,GameSettings.navigationRateOfHunger)

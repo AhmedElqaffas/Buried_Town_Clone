@@ -11,9 +11,9 @@ abstract class Food: Item, Serializable {
         this.thirstBonus = thirstBonus
     }
 
-    override fun activateItemEffect(player: Player) {
-        player.updateHunger(hungerBonus)
-        player.updateThirst(thirstBonus)
+    override fun activateItemEffect() {
+        Player.updateHunger(hungerBonus)
+        Player.updateThirst(thirstBonus)
     }
 
     override fun isConsumable():Boolean {

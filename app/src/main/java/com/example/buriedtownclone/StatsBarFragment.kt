@@ -7,25 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_stats_bar.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-class StatsBarFragment(val player: Player) : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    var visualsUpdater = VisualsUpdater()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class StatsBarFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_stats_bar, container, false)
@@ -33,18 +15,18 @@ class StatsBarFragment(val player: Player) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        updateStats(player)
+        updateStats()
         showStats()
     }
 
-    fun updateStats(player: Player){
-        hpTextView.text = player.getHealthPoints().toString()
-        hungerTextView.text = player.getHunger().toString()
-        thirstTextView.text = player.getThirst().toString()
+    fun updateStats(){
+        hpTextView.text = Player.getHealthPoints().toString()
+        hungerTextView.text = Player.getHunger().toString()
+        thirstTextView.text = Player.getThirst().toString()
     }
 
     private fun showStats(){
-        visualsUpdater.showStatsInStatsBar(player)
+        VisualsUpdater.showStatsInStatsBar()
     }
 
 }

@@ -6,7 +6,6 @@ import com.example.buriedtownclone.homeequipment.Equipment
 
 class EquipmentActivity : AppCompatActivity() {
 
-    private var player = Player()
     private lateinit var equipment: Equipment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +24,7 @@ class EquipmentActivity : AppCompatActivity() {
     }
 
     private fun showStatsBarFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(),"stats bar")
             .commit()
     }
 

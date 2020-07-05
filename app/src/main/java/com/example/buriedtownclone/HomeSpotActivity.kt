@@ -6,10 +6,6 @@ import kotlinx.android.synthetic.main.activity_home_spot.*
 
 class HomeSpotActivity : AppCompatActivity() {
 
-    var database = Database()
-    var player = Player()
-    val visualsUpdater = VisualsUpdater()
-
     override fun onBackPressed(){
         val homeEquipmentFragment = getEquipmentFragment()
         setResult(RESULT_OK, intent)
@@ -44,7 +40,7 @@ class HomeSpotActivity : AppCompatActivity() {
     }
 
     private fun showStatsBarFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(),"stats bar")
             .commit()
     }
 
@@ -52,12 +48,12 @@ class HomeSpotActivity : AppCompatActivity() {
         if(!spot.visited){
             addPistolToInventory()
             spot.visited()
-            visualsUpdater.showFirstHomeVisitDialog(homeSpotRootLayout, horizontalGuideline_endEquipment)
+            VisualsUpdater.showFirstHomeVisitDialog(homeSpotRootLayout, horizontalGuideline_endEquipment)
         }
     }
 
     private fun addPistolToInventory(){
-        player.addToInventory(Pistol(), "1")
+        Player.addToInventory(Pistol(), "1")
     }
 
     private fun showHomeEquipmentFragment(){

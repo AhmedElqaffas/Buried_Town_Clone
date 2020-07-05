@@ -9,22 +9,13 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import kotlinx.android.synthetic.main.activity_game.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.LinkedHashMap
 import kotlin.math.floor
 
 class GameActivity : AppCompatActivity() {
 
-    var database = Database()
-    var player = Player()
     private var citiesVisitedList: MutableList<City> = mutableListOf()
     private lateinit var currentCity: City
-    private var timeHandler = TimeHandler()
-    private var visualsUpdater = VisualsUpdater()
-    private var gameHandler = GameHandler()
     private var handler= Handler()
     private var mediaPlayer = MediaPlayer()
     private var isNavigating = false
@@ -33,7 +24,6 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        println(GameHandler.database.toString())
         initializeClassVariables()
         initializeOrLoadGameData()
         setupViewPagersListeners()
@@ -42,8 +32,8 @@ class GameActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
 
-        timeHandler.stopTimer()
-        gameHandler.freeData()
+        TimeHandler.stopTimer()
+        GameHandler.freeData()
         super.onBackPressed()
     }
 
@@ -60,12 +50,12 @@ class GameActivity : AppCompatActivity() {
             updatePlayerData()
             setupViewPagersAdapters()
             goToCity(Definitions.homeX, Definitions.homeY)
-            visualsUpdater.showWelcomingDialog(rootLayout, horizontalGuideline_lastPart)
+            VisualsUpdater.showWelcomingDialog(rootLayout, horizontalGuideline_lastPart)
         }
         else{
             loadGameData()
             setupViewPagersAdapters()
-            goToCity(player.getLocationX(),player.getLocationY())
+            goToCity(Player.getLocationX(),Player.getLocationY())
         }
     }
     private fun isNewGame(): Boolean{
@@ -82,8 +72,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun initializeGameData(){
-        database.deleteAllData()
-        database.initializeStats()
+        Database.deleteAllData()
+        Database.initializeStats()
     }
 
     private fun refreshClassVariables(){
@@ -96,14 +86,19 @@ class GameActivity : AppCompatActivity() {
     private fun loadGameData(){
         loadPlayerStats()
         loadVisitedCities()
+        loadHomeEquipment()
     }
 
     private fun loadPlayerStats(){
-        player.updateStatsFromDatabase()
+        Player.updateStatsFromDatabase()
     }
 
     private fun updatePlayerData(){
-        player.updateStatsFromDatabase()
+        Player.updateStatsFromDatabase()
+    }
+
+    private fun loadHomeEquipment(){
+        HomeSpot.updateEquipmentFromDatabase()
     }
 
     private fun loadVisitedCities(){
@@ -111,11 +106,11 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun loadVisitedCitiesFromDatabase(): MutableList<City>{
-        return database.getCities()
+        return Database.getCities()
     }
 
     private fun showStatsBarFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(),"stats bar")
             .commit()
     }
 
@@ -140,11 +135,11 @@ class GameActivity : AppCompatActivity() {
 
     private fun navigate(){
         disableUserInteraction()
-        visualsUpdater.showWalkingPanel()
+        VisualsUpdater.showWalkingPanel()
         playSound()
         waitForSomeTimeToSimulateWalking()
         isNavigating = true
-        timeHandler.startNavigationStatsDecrease()
+        TimeHandler.startNavigationStatsDecrease()
 
     }
     private fun waitForSomeTimeToSimulateWalking(){
@@ -155,7 +150,7 @@ class GameActivity : AppCompatActivity() {
 
     }
     private fun endWalkingEffect(){
-        timeHandler.stopNavigationStatsDecrease()
+        TimeHandler.stopNavigationStatsDecrease()
         enableUserInteraction()
         stopSound()
         updatePlayerLocation()
@@ -163,7 +158,7 @@ class GameActivity : AppCompatActivity() {
             return
         }
         loadOrCreateCity()
-        visualsUpdater.hideWalkingPanel()
+        VisualsUpdater.hideWalkingPanel()
         isNavigating = false
     }
 
@@ -213,7 +208,7 @@ class GameActivity : AppCompatActivity() {
         saveCityObject(city)
     }
     private fun saveCityInDatabase(locationX: Int, locationY: Int){
-        database.saveCity(locationX,locationY)
+        Database.saveCity(locationX,locationY)
     }
     private fun saveCityObject(city: City){
         citiesVisitedList.add(city)
@@ -226,7 +221,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun updatePlayerLocation(){
-        player.setLocation(getHorizontalGameLocation(),getVerticalGameLocation())
+        Player.setLocation(getHorizontalGameLocation(),getVerticalGameLocation())
     }
     // ViewPagers position are from 0:size, but we want our game to be -0.5 size : 0.5 size
     // and home would be in the middle (x-0, y=0)
@@ -246,7 +241,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun startCountingTime(){
-        timeHandler.startTimer()
+        TimeHandler.startTimer()
     }
 
     private fun disableUserInteraction(){

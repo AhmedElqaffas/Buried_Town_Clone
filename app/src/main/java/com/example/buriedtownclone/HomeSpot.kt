@@ -4,15 +4,12 @@ import com.example.buriedtownclone.homeequipment.Bed
 import com.example.buriedtownclone.homeequipment.Equipment
 import com.example.buriedtownclone.homeequipment.Greenhouse
 
-class HomeSpot: Spot() {
+object HomeSpot: Spot() {
 
-    companion object{
-        val equipmentList = mutableListOf<Equipment>(Greenhouse(), Bed())
-    }
+    val equipmentList: MutableList<Equipment> = mutableListOf(Greenhouse, Bed)
 
     override fun saveInDatabase() {
-        val database = Database()
-        database.saveHomeSpot(this)
+        Database.saveHomeSpot(this)
     }
 
     fun updateEquipment(equipment: Equipment){
@@ -26,8 +23,11 @@ class HomeSpot: Spot() {
     }
 
     private fun updateEquipmentInDatabase(){
-        val database = Database()
-        database.updateHomeEquipment()
+        Database.updateHomeEquipment()
+    }
+
+    fun updateEquipmentFromDatabase(){
+        Database.getHomeEquipment()
     }
 
    override fun getActivityToOpen(): Class<Any>{
@@ -39,6 +39,8 @@ class HomeSpot: Spot() {
     }
 
     fun getEquipment(name: String): Equipment{
+        for(e in equipmentList)
+            println(e.toString())
         return equipmentList.single { it.name == name }
     }
 }

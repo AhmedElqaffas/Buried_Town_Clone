@@ -8,6 +8,6 @@ abstract class Item(var name: String, var imageResource: Int): Serializable {
         return Class.forName(this::class.qualifiedName!!).newInstance()
     }
 
-    open fun activateItemEffect(player: Player){}
+    open fun activateItemEffect(){}
     abstract fun isConsumable(): Boolean
 }

@@ -19,9 +19,8 @@ abstract class Spot: ItemsContainer(), Serializable{
 
     fun visited(){
         if (!this.visited) {
-            val database = Database()
             visited = true
-            database.updateSpotVisit(this)
+            Database.updateSpotVisit(this)
         }
     }
 
@@ -32,12 +31,11 @@ abstract class Spot: ItemsContainer(), Serializable{
     open fun saveInDatabase(){}
 
     open fun formObject(queryRow: Cursor){
-        val database = Database()
         cityX = queryRow.getInt(queryRow.getColumnIndex("city_x"))
         cityY = queryRow.getInt(queryRow.getColumnIndex("city_y"))
         locationWithinCity = queryRow.getInt(queryRow.getColumnIndex("index_within_city"))
         visited = queryRow.getInt(queryRow.getColumnIndex("visited")) == 1 // to convert int to boolean
-        itemsInside = database.unserializeItemsMap(queryRow)
+        itemsInside = Database.unserializeItemsMap(queryRow)
         spotType = queryRow.getString(queryRow.getColumnIndex("type"))
     }
 

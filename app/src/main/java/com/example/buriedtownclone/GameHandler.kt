@@ -2,18 +2,12 @@ package com.example.buriedtownclone
 
 import android.app.Activity
 import android.content.Intent
+import com.example.buriedtownclone.homeequipment.Greenhouse
 
-class GameHandler() {
+object GameHandler{
 
-
-
-    companion object{
-
-        var context: Activity? = null
-        var database = Database()
-        private var timeHandler = TimeHandler()
-        var isGameFinished = false
-    }
+    var context: Activity? = null
+    var isGameFinished = false
 
     init {
         isGameFinished = false
@@ -21,11 +15,12 @@ class GameHandler() {
 
     fun endGame(){
         isGameFinished = true
-        timeHandler.stopTimer()
-        database.deleteAllData()
+        TimeHandler.stopTimer()
+        Database.deleteAllData()
         goToMainMenu()
         freeData()
     }
+
     private fun goToMainMenu(){
         println(context.toString())
         val intent = Intent(context, MainActivity::class.java)
@@ -38,5 +33,6 @@ class GameHandler() {
         VisualsUpdater.activity = null
         TimeHandler.context = null
         VisualsUpdater.dialogFragmentContainer = null
+        Greenhouse.reset()
     }
 }

@@ -8,8 +8,6 @@ import kotlinx.android.synthetic.main.new_game.*
 
 class MainActivity : AppCompatActivity() {
 
-    var database = Database()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.new_game)
@@ -19,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeDatabase(){
         Database.context = this
-        database.initializeDatabase()
+        Database.initializeDatabase()
     }
 
     override fun onResume() {
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity() {
        Otherwise, keep it hidden
     */
     private fun showOrHideContinueGameButton(){
-        if(database.getHealthPoints() != null){
+        if(Database.getHealthPoints() != null){
             continueGameButton.visibility = View.VISIBLE
         }
     }

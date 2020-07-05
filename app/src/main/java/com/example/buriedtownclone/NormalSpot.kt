@@ -3,8 +3,7 @@ package com.example.buriedtownclone
 class NormalSpot: Spot() {
 
     override fun saveInDatabase() {
-        val database = Database()
-        database.saveSpot(this)
+        Database.saveSpot(this)
     }
 
     override fun getActivityToOpen(): Class<Any> {

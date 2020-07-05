@@ -1,36 +1,29 @@
 package com.example.buriedtownclone
 
-class Player() {
+object Player{
 
-    companion object{
-
-        private var hp: Int = 100
-        private var hunger:Int = 100
-        private var thirst: Int = 100
-        private var locationX = 0
-        private var locationY = 0
-        private var inventory: Inventory = Inventory()
-
-        private var database: Database = Database()
-        private var gameHandler = GameHandler()
-        private var visualsUpdater = VisualsUpdater()
-    }
+    private var hp: Int = 100
+    private var hunger:Int = 100
+    private var thirst: Int = 100
+    private var locationX = 0
+    private var locationY = 0
+    private var inventory: Inventory = Inventory()
 
 
     fun updateStatsFromDatabase(){
 
-        this.setHealthPoints(database.getHealthPoints()!!)
-        hunger = database.getHunger()
-        thirst = database.getThirst()
-        inventory.itemsInside = database.getInventory()
-        var location = database.getPlayerLocation()
+        this.setHealthPoints(Database.getHealthPoints()!!)
+        hunger = Database.getHunger()
+        thirst = Database.getThirst()
+        inventory.itemsInside = Database.getInventory()
+        val location = Database.getPlayerLocation()
         locationX = location[0]
         locationY = location[1]
     }
 
    private fun setHealthPoints(value: Int){
         if(value == 0) {
-            gameHandler.endGame()
+            GameHandler.endGame()
         }
         else{
             hp = value
@@ -42,7 +35,7 @@ class Player() {
         updateLocationInDatabase()
     }
     private fun updateLocationInDatabase(){
-        database.updatePlayerLocation(locationX, locationY)
+        Database.updatePlayerLocation(locationX, locationY)
     }
 
     fun getHunger(): Int{
@@ -69,9 +62,9 @@ class Player() {
         if(hp > 100)
             hp = 100
         else if(hp <= 0)
-            gameHandler.endGame()
-        visualsUpdater.showStatsInStatsBar(this)
-        database.setHP(hp)
+            GameHandler.endGame()
+        VisualsUpdater.showStatsInStatsBar()
+        Database.setHP(hp)
     }
 
     fun updateHunger(hungerBonus: Int){
@@ -79,25 +72,25 @@ class Player() {
         if(hunger > 100)
             hunger = 100
         else if(hunger <= 0) {
-            gameHandler.endGame()
+            GameHandler.endGame()
         }
-        visualsUpdater.showStatsInStatsBar(this)
-        database.setHunger(hunger)
+        VisualsUpdater.showStatsInStatsBar()
+        Database.setHunger(hunger)
     }
     fun updateThirst(thirstBonus: Int){
         thirst += thirstBonus
         if(thirst > 100)
             thirst = 100
         if(thirst <= 0) {
-            gameHandler.endGame()
+            GameHandler.endGame()
         }
-        visualsUpdater.showStatsInStatsBar(this)
-        database.setThirst(thirst)
+        VisualsUpdater.showStatsInStatsBar()
+        Database.setThirst(thirst)
     }
 
     fun addToInventory(item: Item, quantity: String){
         inventory.itemsInside.put(item, quantity)
-        database.setInventory(inventory.itemsInside)
+        Database.setInventory(inventory.itemsInside)
     }
 
 }

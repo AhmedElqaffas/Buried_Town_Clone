@@ -7,9 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
 
-    private var database = Database()
-    var player =  Player()
-    private var visualsUpdater =  VisualsUpdater()
     private lateinit var spotItemsFragment: ItemsFragment
     private lateinit var inventoryItemsFragment: ItemsFragment
     private lateinit var inventoryHelperFragment: InventoryHelper
@@ -40,14 +37,14 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun showStatsBarFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(player),"stats bar")
+        supportFragmentManager.beginTransaction().replace(R.id.statsBarContainer, StatsBarFragment(),"stats bar")
             .commit()
     }
 
     private fun manageSpot(){
         val currentSpot = getClickedSpotObject()
         showSpotItemsFragment(currentSpot)
-        showInventoryFragment(player.getInventory())
+        showInventoryFragment(Player.getInventory())
 
         setSpotAsVisited(currentSpot)
     }
@@ -90,11 +87,11 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     override fun onItemClicked(item: Item, slotsFound: Int, itemsFragment: ItemsFragment) {
         if(shouldConsumeItem()){
             if(itemsFragment.tag == Definitions.spotItems){
-                spotItemsFragment.consumeItem(item,slotsFound,player)
+                spotItemsFragment.consumeItem(item,slotsFound)
                 updateSpotItemsInDatabase()
             }
             else{
-                inventoryItemsFragment.consumeItem(item,slotsFound,player)
+                inventoryItemsFragment.consumeItem(item,slotsFound)
                 commitInventoryChangesToDatabase()
             }
             //visualsUpdater.showStatsInStatsBar(player)
@@ -122,10 +119,10 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
     }
 
     private fun commitInventoryChangesToDatabase(){
-        database.setInventory(inventoryItemsFragment.getItemsMap())
+        Database.setInventory(inventoryItemsFragment.getItemsMap())
     }
 
     private fun updateSpotItemsInDatabase(){
-        database.updateSpotItems(getClickedSpotObject())
+        Database.updateSpotItems(getClickedSpotObject())
     }
 }

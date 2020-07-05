@@ -3,6 +3,8 @@ package com.example.buriedtownclone
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.example.buriedtownclone.homeequipment.Equipment
+import com.example.buriedtownclone.homeequipment.Greenhouse
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.LinkedListMultimap
 import com.google.gson.Gson
@@ -10,12 +12,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class Database{
+object Database{
 
-    companion object{
-        lateinit var context: Context
-        lateinit var database: SQLiteDatabase
-    }
+    lateinit var context: Context
+    lateinit var database: SQLiteDatabase
 
     fun initializeDatabase(){
         openOrCreateDatabase()
@@ -153,7 +153,7 @@ class Database{
         val spot: Spot
         val spotType = queryRow.getString(queryRow.getColumnIndex("type"))
         spot = if(spotType == Definitions.home){
-            HomeSpot()
+            HomeSpot
         } else{
             NormalSpot()
         }
@@ -230,13 +230,57 @@ class Database{
     private fun getItemKey(entry: MutableMap.MutableEntry<Item, String>): String{
         return entry.key.toString()+ UUID.randomUUID()
     }
-    private fun serializeEquipmentList(): String{
-        return Gson().toJson(HomeSpot.equipmentList)
-    }
-
+    
     fun updateHomeEquipment(){
         val serializedEquipmentList = serializeEquipmentList()
         database.execSQL("UPDATE home SET equipment = '$serializedEquipmentList'")
+    }
+
+    private fun serializeEquipmentList(): String{
+        return Gson().toJson(HomeSpot.equipmentList)
+    }
+    
+    fun getHomeEquipment(){
+        val equipmentQueryResult = database.rawQuery(getEquipmentQuery(), null)
+        unserializeEquipmentList(equipmentQueryResult)
+    }
+    
+    private fun getEquipmentQuery(): String{
+        return "SELECT equipment FROM home"
+    }
+
+    private fun unserializeEquipmentList(queryResult: Cursor){
+        queryResult.moveToFirst()
+        val equipmentList = mutableListOf<Equipment>()
+        val equipmentText = queryResult.getString(0)
+        try {
+            val jsonObjects = JSONArray(equipmentText)
+            for(i in 0 until jsonObjects.length()){
+                formEquipmentObject(jsonObjects.getJSONObject(i))
+            }
+
+            //for (i in 0 until names.length()) {
+
+            /*val jsonKey = names.getString(0) // retrieve exact key string from database
+            val linkedListKey = convertKeyStringToClassString(jsonKey)
+            itemsInsideMap.put(linkedListKey.newInstance() as Item,
+            json.opt(jsonKey).toString())*/
+            }
+         catch (e: Exception) {
+             println("*********************")
+            println(e.printStackTrace())
+        }
+    }
+
+    private fun formEquipmentObject(jsonObject: JSONObject){
+
+        val currentEquipment = HomeSpot.getEquipment(jsonObject.getString("name"))
+        currentEquipment.level = jsonObject.getString("level").toInt()
+        /*println(equipment.toString())
+        /*equipment.name = jsonObject.getString("name")
+        equipment.level = jsonObject.getString("level").toInt()
+        equipment.description = jsonObject.getString("description")*/
+        return equipment as Equipment*/
     }
 
     fun updateSpotVisit(spot: Spot){
@@ -266,10 +310,12 @@ class Database{
         val serializedInventory = serializeItemMap(itemsMap)
         database.execSQL("UPDATE stats SET quantity = '$serializedInventory' WHERE stat = 'inventory'")
     }
+    
     fun getInventory(): LinkedListMultimap<Item,String>{
         val inventoryQuery: Cursor = database.rawQuery(getInventoryQuery(),null)
         return extractInventory(inventoryQuery)
     }
+    
     private fun getInventoryQuery(): String{
         return "SELECT quantity FROM stats WHERE stat = 'inventory'"
     }
@@ -279,18 +325,16 @@ class Database{
         println("EXTRACTING INVENTORY:")
         return unserializeItemsMap(results)
     }
-    private fun unserializeInventory(itemMapText: String): LinkedHashMultimap<Item,String>{
-        val gson = Gson()
-        return gson.fromJson(itemMapText, LinkedHashMultimap::class.java) as LinkedHashMultimap<Item, String>
-    }
 
     fun getCities(): MutableList<City>{
         val citiesQueryResult: Cursor = database.rawQuery(getCitiesQuery(), null)
         return formCityResultsIntoObjects(citiesQueryResult)
     }
+    
     private fun getCitiesQuery(): String{
         return "SELECT * FROM cities"
     }
+    
     private fun formCityResultsIntoObjects(results: Cursor): MutableList<City>{
         val cityObjects = mutableListOf<City>()
         results.moveToFirst()

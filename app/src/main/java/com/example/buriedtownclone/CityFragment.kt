@@ -12,12 +12,6 @@ import androidx.fragment.app.Fragment
 import com.google.common.collect.LinkedListMultimap
 import java.lang.Exception
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//private const val ARG_PARAM1 = "param1"
-//private const val ARG_PARAM2 = "param2"
-
-
 class CityFragment(private val city: City, private val isNewCity: Boolean): Fragment(){
 
     private val buildingsProbabilities: HashMap<Int, Double> = hashMapOf(R.drawable.house to 0.4,
@@ -33,20 +27,6 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
         R.drawable.school to Definitions.school , R.drawable.pharmacy to Definitions.pharmacy ,
         R.drawable.police_station to Definitions.policeStation , R.drawable.workshop to Definitions.workshop,
         R.drawable.home to Definitions.home)
-
-    var database = Database()
-
-    /*// TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-*/
-    /*override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -134,7 +114,7 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
     }
     private fun createSpotObject(indexWithinCity: Int, spotType: String): Spot{
         val spot = if(spotType == "home"){
-                        HomeSpot()
+                        HomeSpot
                     } else{
                         NormalSpot()
                     }
@@ -237,7 +217,7 @@ class CityFragment(private val city: City, private val isNewCity: Boolean): Frag
         city.spots[2].visited()
     }
     private fun updateSpotItemsInDatabase(spotVisited: Spot){
-        database.updateSpotItems(spotVisited)
+        Database.updateSpotItems(spotVisited)
     }
 
 }

@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_home_equipment.*
 class HomeEquipmentFragment : Fragment(){
 
     private lateinit var inflated: ConstraintLayout
-    private val homeSpot = HomeSpot()
+    private val homeSpot = HomeSpot
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_home_equipment, container, false) as ConstraintLayout

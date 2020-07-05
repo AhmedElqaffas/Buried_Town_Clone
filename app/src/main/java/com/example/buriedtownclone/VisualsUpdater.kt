@@ -1,36 +1,35 @@
 package com.example.buriedtownclone
 
 import android.app.Activity
+import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import com.example.buriedtownclone.homeequipment.Equipment
 import kotlinx.android.synthetic.main.activity_game.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
 
 
-class VisualsUpdater: DialogFragment.CommunicationInterface{
+object VisualsUpdater: DialogFragment.CommunicationInterface{
 
     private lateinit var statsBarFragment: StatsBarFragment
-    private lateinit var dialogFragment: DialogFragment
+    private var dialogFragment: DialogFragment? = null
     private lateinit var parentContainerLayout: ConstraintLayout
     private var coroutineJob = Job()
 
-    companion object{
+    var activity: Activity? = null
+    var isDialogActive = false
+    var dialogFragmentContainer: FrameLayout? = null
 
-        var activity: Activity? = null
-        var isDialogActive = false
-        private val timeHandler = TimeHandler()
-        var dialogFragmentContainer: FrameLayout? = null
-    }
-
-    fun showStatsInStatsBar(player: Player){
+    fun showStatsInStatsBar(){
         if(activity == null){ // If the game handler ended the game
             return
         }
         getStatsBarFragment()
-        statsBarFragment.updateStats(player)
+        statsBarFragment.updateStats()
     }
 
     private fun getStatsBarFragment(){
@@ -40,37 +39,39 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
     }
 
     fun showWalkingPanel(){
-        activity!!.walkingPanel.visibility = View.VISIBLE
+        activity?.walkingPanel?.visibility = View.VISIBLE
     }
     fun hideWalkingPanel(){
-        activity!!.walkingPanel.visibility = View.GONE
+        activity?.walkingPanel?.visibility = View.GONE
     }
 
 
     fun showWelcomingDialog(parentContainerLayout: ConstraintLayout, upperConstraint: View){
         setupFragment(parentContainerLayout, upperConstraint)
+        coroutineJob = Job()
         coroutineJob.invokeOnCompletion { startFragmentWelcomeDialog() }
     }
 
     fun showFirstHomeVisitDialog(parentContainerLayout: ConstraintLayout, upperConstraint: View){
         setupFragment(parentContainerLayout, upperConstraint)
+        coroutineJob = Job()
         coroutineJob.invokeOnCompletion { startFragmentFirstHomeVisitDialog() }
     }
 
     private fun setupFragment(parentContainerLayout: ConstraintLayout, upperConstraint: View){
         this.parentContainerLayout = parentContainerLayout
-        if(!timeHandler.isStopped())
-            timeHandler.stopTimer()
+        if(!TimeHandler.isStopped())
+            TimeHandler.stopTimer()
         isDialogActive = true
         createFragmentContainer()
         customizeContainer(upperConstraint)
         loadDialogFragment()
-        dialogFragment.setInterfaceListener(this)
+        dialogFragment?.setInterfaceListener(this)
     }
 
     private fun createFragmentContainer(){
         dialogFragmentContainer =  FrameLayout(activity!!)
-        dialogFragmentContainer!!.id = View.generateViewId()
+        dialogFragmentContainer?.id = View.generateViewId()
     }
 
     private fun customizeContainer(upperConstraint: View ){
@@ -84,24 +85,24 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
         constraintSet.connect(dialogFragmentContainer!!.id, ConstraintSet.BOTTOM, parentContainerLayout.id, ConstraintSet.BOTTOM, 0)
         constraintSet.applyTo(parentContainerLayout)
 
-        dialogFragmentContainer!!.layoutParams.width = ConstraintLayout.LayoutParams.MATCH_PARENT
-        dialogFragmentContainer!!.layoutParams.height = 0
+        dialogFragmentContainer?.layoutParams?.width = ConstraintLayout.LayoutParams.MATCH_PARENT
+        dialogFragmentContainer?.layoutParams?.height = 0
     }
 
     private fun loadDialogFragment(){
         dialogFragment = DialogFragment()
         val fragmentActivity: FragmentActivity = activity as FragmentActivity
         fragmentActivity.supportFragmentManager.
-        beginTransaction().replace(dialogFragmentContainer!!.id, dialogFragment,"dialog")
+        beginTransaction().replace(dialogFragmentContainer!!.id, dialogFragment!!,"dialog")
             .commit()
     }
 
     private fun startFragmentWelcomeDialog(){
-        dialogFragment.createWelcomingDialog(parentContainerLayout)
+        dialogFragment?.createWelcomingDialog(parentContainerLayout)
     }
 
     private fun startFragmentFirstHomeVisitDialog(){
-        dialogFragment.createFirstHomeVisitDialog(parentContainerLayout)
+        dialogFragment?.createFirstHomeVisitDialog(parentContainerLayout)
     }
 
 
@@ -109,12 +110,18 @@ class VisualsUpdater: DialogFragment.CommunicationInterface{
         isDialogActive = false
         parentContainerLayout.removeView(dialogFragmentContainer)
         dialogFragmentContainer = null
-        if(timeHandler.isStopped())
-             timeHandler.startTimer()
+        dialogFragment = null
+        if(TimeHandler.isStopped())
+             TimeHandler.startTimer()
     }
 
     override fun onFragmentReady() {
         coroutineJob.complete() // trigger invokeOnCompletion()
+    }
+
+    fun showEquipmentDialog(equipmentObject: Equipment, fragmentManager: FragmentManager?){
+        val equipmentAlertDialog = EquipmentDialogFragment(equipmentObject)
+        fragmentManager?.let { equipmentAlertDialog.show(it, "equipment dialog") }
     }
 
 

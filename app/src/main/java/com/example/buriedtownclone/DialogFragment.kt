@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 
-class DialogFragment : Fragment() {
+open class DialogFragment : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
     private lateinit var parentContainerLayout: ConstraintLayout
@@ -19,15 +19,19 @@ class DialogFragment : Fragment() {
 
 
     override fun onPause() {
-        super.onPause()
         endDialog()
+        super.onPause()
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated =  inflater.inflate(R.layout.fragment_dialog, container, false) as ConstraintLayout
         val dialogTextView = inflated.findViewById<TextView>(R.id.dialog)
         dialogTextView.setOnClickListener {dialogClicked(dialogTextView)}
-        postThatFragmentIsReady()
         return inflated
+    }
+
+    override fun onResume() {
+        super.onResume()
+        postThatFragmentIsReady()
     }
 
     interface CommunicationInterface{
@@ -41,7 +45,7 @@ class DialogFragment : Fragment() {
     }
 
     private fun postThatFragmentIsReady(){
-        communicationInterface!!.onFragmentReady()
+        communicationInterface?.onFragmentReady()
     }
 
     fun createWelcomingDialog(parentContainerLayout: ConstraintLayout){
@@ -88,7 +92,6 @@ class DialogFragment : Fragment() {
     }
 
     private fun endDialog(){
-       val visualsUpdater = VisualsUpdater()
-        visualsUpdater.hideDialog(parentContainerLayout)
+       VisualsUpdater.hideDialog(parentContainerLayout)
     }
 }

@@ -16,24 +16,11 @@ import com.google.common.collect.LinkedListMultimap
 import java.lang.Integer.parseInt
 
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var inflated: GridLayout
     private var itemActionDecider : ItemActionDecider? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     interface ItemActionDecider{
         fun onItemClicked(item: Item, slotsFound: Int, itemsFragment: ItemsFragment){
@@ -132,11 +119,11 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
         slot.setOnClickListener { itemActionDecider!!.onItemClicked(getItem(slotsFound), slotsFound, this) }
     }
 
-    fun consumeItem(item: Item, slotIndex: Int, player: Player){
+    fun consumeItem(item: Item, slotIndex: Int){
         if(item.isConsumable()){
             //player.updateStatsFromDatabase()
             reduceItemQuantity(slotIndex)
-            item.activateItemEffect(player)
+            item.activateItemEffect()
         }
     }
 
