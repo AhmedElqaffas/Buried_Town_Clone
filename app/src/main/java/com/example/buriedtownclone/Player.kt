@@ -1,5 +1,7 @@
 package com.example.buriedtownclone
 
+import com.google.common.collect.LinkedListMultimap
+
 object Player{
 
     private var hp: Int = 100
@@ -91,6 +93,16 @@ object Player{
     fun addToInventory(item: Item, quantity: String){
         inventory.itemsInside.put(item, quantity)
         Database.setInventory(inventory.itemsInside)
+    }
+
+    fun hasEnoughMaterials(material: MutableMap.MutableEntry<Materials, Int>): Boolean {
+        val totalMaterialsOfThisType = 0
+        val filteredInventoryItemsMap = inventory.itemsInside.asMap()
+            .filterKeys { it.name == material.key.name }
+        for(entry in filteredInventoryItemsMap.entries){
+            println(entry.key)
+        }
+        return true
     }
 
 }

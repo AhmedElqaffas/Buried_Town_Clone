@@ -39,8 +39,6 @@ object HomeSpot: Spot() {
     }
 
     fun getEquipment(name: String): Equipment{
-        for(e in equipmentList)
-            println(e.toString())
         return equipmentList.single { it.name == name }
     }
 }

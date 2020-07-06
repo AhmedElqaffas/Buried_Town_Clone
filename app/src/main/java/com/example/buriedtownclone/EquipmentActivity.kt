@@ -38,7 +38,7 @@ class EquipmentActivity : AppCompatActivity() {
     }
 
     private fun showEquipmentFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, equipment.getFragment(),"equipment")
+        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, EquipmentFragment(equipment),"equipment")
             .commit()
     }
 }

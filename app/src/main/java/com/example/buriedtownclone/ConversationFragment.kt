@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 
-open class DialogFragment : Fragment() {
+open class ConversationFragment : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
     private lateinit var parentContainerLayout: ConstraintLayout

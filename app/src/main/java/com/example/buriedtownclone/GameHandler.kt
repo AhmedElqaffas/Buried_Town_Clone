@@ -22,7 +22,6 @@ object GameHandler{
     }
 
     private fun goToMainMenu(){
-        println(context.toString())
         val intent = Intent(context, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         context!!.startActivity(intent)
@@ -34,5 +33,6 @@ object GameHandler{
         TimeHandler.context = null
         VisualsUpdater.dialogFragmentContainer = null
         Greenhouse.reset()
+        println("Level now is ${Greenhouse.level}")
     }
 }

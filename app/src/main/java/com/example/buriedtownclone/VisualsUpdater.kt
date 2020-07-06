@@ -1,7 +1,6 @@
 package com.example.buriedtownclone
 
 import android.app.Activity
-import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -13,10 +12,10 @@ import kotlinx.android.synthetic.main.activity_game.*
 import kotlinx.coroutines.Job
 
 
-object VisualsUpdater: DialogFragment.CommunicationInterface{
+object VisualsUpdater: ConversationFragment.CommunicationInterface{
 
     private lateinit var statsBarFragment: StatsBarFragment
-    private var dialogFragment: DialogFragment? = null
+    private var conversationFragment: ConversationFragment? = null
     private lateinit var parentContainerLayout: ConstraintLayout
     private var coroutineJob = Job()
 
@@ -66,7 +65,7 @@ object VisualsUpdater: DialogFragment.CommunicationInterface{
         createFragmentContainer()
         customizeContainer(upperConstraint)
         loadDialogFragment()
-        dialogFragment?.setInterfaceListener(this)
+        conversationFragment?.setInterfaceListener(this)
     }
 
     private fun createFragmentContainer(){
@@ -90,19 +89,19 @@ object VisualsUpdater: DialogFragment.CommunicationInterface{
     }
 
     private fun loadDialogFragment(){
-        dialogFragment = DialogFragment()
+        conversationFragment = ConversationFragment()
         val fragmentActivity: FragmentActivity = activity as FragmentActivity
         fragmentActivity.supportFragmentManager.
-        beginTransaction().replace(dialogFragmentContainer!!.id, dialogFragment!!,"dialog")
+        beginTransaction().replace(dialogFragmentContainer!!.id, conversationFragment!!,"dialog")
             .commit()
     }
 
     private fun startFragmentWelcomeDialog(){
-        dialogFragment?.createWelcomingDialog(parentContainerLayout)
+        conversationFragment?.createWelcomingDialog(parentContainerLayout)
     }
 
     private fun startFragmentFirstHomeVisitDialog(){
-        dialogFragment?.createFirstHomeVisitDialog(parentContainerLayout)
+        conversationFragment?.createFirstHomeVisitDialog(parentContainerLayout)
     }
 
 
@@ -110,7 +109,7 @@ object VisualsUpdater: DialogFragment.CommunicationInterface{
         isDialogActive = false
         parentContainerLayout.removeView(dialogFragmentContainer)
         dialogFragmentContainer = null
-        dialogFragment = null
+        conversationFragment = null
         if(TimeHandler.isStopped())
              TimeHandler.startTimer()
     }

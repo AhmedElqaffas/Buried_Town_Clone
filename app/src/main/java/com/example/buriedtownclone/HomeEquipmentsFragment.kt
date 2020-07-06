@@ -13,10 +13,9 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_home_equipment.*
 
 
-class HomeEquipmentFragment : Fragment(){
+class HomeEquipmentsFragment : Fragment(){
 
     private lateinit var inflated: ConstraintLayout
-    private val homeSpot = HomeSpot
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_home_equipment, container, false) as ConstraintLayout
@@ -84,13 +83,13 @@ class HomeEquipmentFragment : Fragment(){
 
     private fun handleGreenhouseClicked(){
         val intent = Intent(context, EquipmentActivity::class.java)
-        intent.putExtra("equipment", homeSpot.getEquipment("Greenhouse"))
+        intent.putExtra("equipment", HomeSpot.getEquipment("Greenhouse"))
         startActivity(intent)
     }
 
     private fun handleBedClicked(){
         val intent = Intent(context, EquipmentActivity::class.java)
-        intent.putExtra("equipment", homeSpot.getEquipment("Bed"))
+        intent.putExtra("equipment", HomeSpot.getEquipment("Bed"))
         startActivity(intent)
     }
 

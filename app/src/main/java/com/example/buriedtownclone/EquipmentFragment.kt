@@ -1,32 +1,29 @@
 package com.example.buriedtownclone
 
-import android.app.FragmentManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentActivity
 import com.example.buriedtownclone.homeequipment.Equipment
 import com.example.buriedtownclone.homeequipment.Greenhouse
-import kotlinx.android.synthetic.main.fragment_greenhouse.*
+import kotlinx.android.synthetic.main.fragment_equipment.*
 
 
-class GreenhouseFragment : Fragment() {
+class EquipmentFragment(private val equipment: Equipment) : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
-    private lateinit var greenhouse: Greenhouse
-    private val homeSpot = HomeSpot
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        inflated = inflater.inflate(R.layout.fragment_greenhouse, container, false) as ConstraintLayout
+        inflated = inflater.inflate(R.layout.fragment_equipment, container, false) as ConstraintLayout
         return inflated
     }
 
     override fun onPause() {
         super.onPause()
-        homeSpot.updateEquipment(greenhouse)
+        HomeSpot.updateEquipment(equipment)
     }
 
     override fun onResume() {
@@ -35,27 +32,22 @@ class GreenhouseFragment : Fragment() {
     }
 
     private fun setupFragment(){
-        initializeGreenHouseObject()
         setTitleLevel()
         setDescription()
         setActionButtonImage()
         setClickListeners()
     }
 
-    private fun initializeGreenHouseObject(){
-        greenhouse = homeSpot.getEquipment("Greenhouse") as Greenhouse
-    }
-
     private fun setTitleLevel(){
-        titleTextView.text = "${titleTextView.text} - Level ${greenhouse.level}"
+        titleTextView.text = "${equipment.name} - Level ${equipment.level}"
     }
 
     private fun setDescription(){
-        equipmentDescription.text = greenhouse.description
+        equipmentDescription.text = equipment.description
     }
 
     private fun setActionButtonImage(){
-        actionButton.setImageResource(greenhouse.getActionButtonImage())
+        actionButton.setImageResource(equipment.getActionButtonImage())
     }
 
     private fun setClickListeners(){
@@ -64,11 +56,17 @@ class GreenhouseFragment : Fragment() {
     }
 
     private fun upgradeButtonClicked(){
-        VisualsUpdater.showEquipmentDialog(greenhouse, fragmentManager)
+        if(equipment.isUpgradeable()){
+            VisualsUpdater.showEquipmentDialog(equipment, fragmentManager)
+        }
+        else{
+            Toast.makeText(context, "This Equipment is fully upgraded", Toast.LENGTH_LONG).show()
+        }
+
     }
 
     private fun actionButtonClicked(){
-        greenhouse.performAction()
+        equipment.performAction()
     }
 
 }

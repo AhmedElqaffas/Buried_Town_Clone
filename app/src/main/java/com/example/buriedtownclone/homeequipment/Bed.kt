@@ -1,21 +1,33 @@
 package com.example.buriedtownclone.homeequipment
 
 import androidx.fragment.app.Fragment
-import com.example.buriedtownclone.BedFragment
-import com.example.buriedtownclone.Definitions
-import com.example.buriedtownclone.GreenhouseFragment
+import com.example.buriedtownclone.*
 
 object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
 
-    override fun getFragment(): Fragment {
-        return BedFragment()
-    }
+    /**
+     * Description: Bed Can't be Upgraded
+     */
 
     override fun upgrade(): Boolean {
         return false
     }
 
-    override fun performAction(): Boolean {
-        TODO("Not yet implemented")
+    override fun initializeMaterialsList(materialsList: MutableList<MutableMap<Materials,Int>>?){
+        materialsList?.add(0, mutableMapOf())
+    }
+
+    override fun getActionButtonImage(): Int {
+        return R.drawable.sleep
+    }
+
+    override fun performAction(){
+        updatePlayerStats()
+    }
+
+    private fun updatePlayerStats(){
+        Player.updateHP(100)
+        Player.updateThirst(-10)
+        Player.updateHunger(-7)
     }
 }

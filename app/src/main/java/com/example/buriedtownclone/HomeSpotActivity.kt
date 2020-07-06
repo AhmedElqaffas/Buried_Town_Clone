@@ -57,11 +57,11 @@ class HomeSpotActivity : AppCompatActivity() {
     }
 
     private fun showHomeEquipmentFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, HomeEquipmentFragment(),"home")
+        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, HomeEquipmentsFragment(),"home")
             .commit()
     }
 
-    private fun getEquipmentFragment(): HomeEquipmentFragment{
-        return supportFragmentManager.findFragmentByTag("home") as HomeEquipmentFragment
+    private fun getEquipmentFragment(): HomeEquipmentsFragment{
+        return supportFragmentManager.findFragmentByTag("home") as HomeEquipmentsFragment
     }
 }
