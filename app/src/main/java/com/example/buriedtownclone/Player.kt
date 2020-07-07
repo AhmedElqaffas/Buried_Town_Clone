@@ -1,7 +1,5 @@
 package com.example.buriedtownclone
 
-import com.google.common.collect.LinkedListMultimap
-
 object Player{
 
     private var hp: Int = 100
@@ -9,7 +7,7 @@ object Player{
     private var thirst: Int = 100
     private var locationX = 0
     private var locationY = 0
-    private var inventory: Inventory = Inventory()
+    private var inventory = Inventory
 
 
     fun updateStatsFromDatabase(){
@@ -95,14 +93,14 @@ object Player{
         Database.setInventory(inventory.itemsInside)
     }
 
-    fun hasEnoughMaterials(material: MutableMap.MutableEntry<Materials, Int>): Boolean {
-        val totalMaterialsOfThisType = 0
-        val filteredInventoryItemsMap = inventory.itemsInside.asMap()
-            .filterKeys { it.name == material.key.name }
-        for(entry in filteredInventoryItemsMap.entries){
-            println(entry.key)
+    fun consumeBuildingMaterials(materialsToConsume: MutableMap<Materials, Int>?) {
+        for(entry in materialsToConsume!!.entries){
+            consumeMaterialEntry(entry)
         }
-        return true
+    }
+
+    private fun consumeMaterialEntry(entry: MutableMap.MutableEntry<Materials, Int>) {
+        inventory.decrementMaterialsQuantity(entry)
     }
 
 }

@@ -141,7 +141,7 @@ class ItemsFragment(private val itemContainerType: ItemsContainer) : Fragment() 
     }
 
     private fun reduceItemQuantity(slotIndex: Int){
-        itemContainerType.decrementItemQuantity(slotIndex)
+        itemContainerType.decrementClickedItemQuantity(slotIndex)
         refreshLayout()
     }
 

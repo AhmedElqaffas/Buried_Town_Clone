@@ -16,6 +16,8 @@ import kotlinx.android.synthetic.main.fragment_equipment.*
 
 class EquipmentDialogFragment(private val equipmentObject: Equipment): androidx.fragment.app.DialogFragment(){
 
+    private var materialsEnoughToUpgrade = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.alert_dialog, container, false)
     }
@@ -42,6 +44,7 @@ class EquipmentDialogFragment(private val equipmentObject: Equipment): androidx.
         val materialQuantityTextView = addMaterialQuantityTextView(material)
         requiredMaterialsContainer.addView(materialImageView)
         requiredMaterialsContainer.addView(materialQuantityTextView)
+        enableOrDisableUpgradeButton()
     }
 
     private fun addMaterialImage(material: MutableMap.MutableEntry<Materials, Int>): ImageView{
@@ -61,8 +64,9 @@ class EquipmentDialogFragment(private val equipmentObject: Equipment): androidx.
     }
 
     private fun setQuantityTextColor(material: MutableMap.MutableEntry<Materials, Int>, materialQuantity: TextView) {
-        if(Player.hasEnoughMaterials(material)){
+        if(Inventory.hasEnoughMaterials(material)){
             materialQuantity.setTextColor(Color.GREEN)
+            materialsEnoughToUpgrade = true
         }
         else{
             materialQuantity.setTextColor(Color.RED)
@@ -76,6 +80,11 @@ class EquipmentDialogFragment(private val equipmentObject: Equipment): androidx.
         view.layoutParams = params
     }
 
+    private fun enableOrDisableUpgradeButton(){
+        if(!materialsEnoughToUpgrade)
+            confirmUpgrade.isEnabled = false
+    }
+
     private fun setClickListeners(){
         confirmUpgrade.setOnClickListener { confirmUpgradeButtonClicked() }
         cancelUpgrade.setOnClickListener { dialog?.dismiss() }
@@ -84,12 +93,12 @@ class EquipmentDialogFragment(private val equipmentObject: Equipment): androidx.
     private fun confirmUpgradeButtonClicked(){
         equipmentObject.upgrade()
         updateFragmentLevelText()
+        this.dismiss()
     }
 
     private fun updateFragmentLevelText(){
         val fragment = activity?.supportFragmentManager?.findFragmentByTag("equipment")
         fragment?.titleTextView?.text = "${equipmentObject.name} - Level ${equipmentObject.level}"
-        this.dismiss()
     }
 
     private fun dpToPx(dp: Float): Int {

@@ -33,6 +33,5 @@ object GameHandler{
         TimeHandler.context = null
         VisualsUpdater.dialogFragmentContainer = null
         Greenhouse.reset()
-        println("Level now is ${Greenhouse.level}")
     }
 }

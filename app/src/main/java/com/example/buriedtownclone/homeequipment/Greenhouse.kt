@@ -1,6 +1,5 @@
 package com.example.buriedtownclone.homeequipment
 
-import androidx.fragment.app.Fragment
 import com.example.buriedtownclone.*
 
 object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription) {
@@ -17,14 +16,9 @@ object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription)
         materialsList?.add(4, mutableMapOf(Wood() to 75, Nail() to 80))
     }
 
-    override fun upgrade(): Boolean {
-        if(materialsEnough()){
-            level++
-            HomeSpot.updateEquipment(this)
+    /*override fun upgrade(): Boolean {
             return true
-        }
-        return false
-    }
+    }*/
 
     private fun materialsEnough(): Boolean{
         return true
@@ -36,6 +30,6 @@ object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription)
 
     fun reset(){
         level = 1
-        HomeSpot.updateEquipment(this)
+        HomeSpot.updateEquipmentList(this)
     }
 }

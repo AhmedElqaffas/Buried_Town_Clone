@@ -14,10 +14,13 @@ object HomeSpot: Spot() {
 
     fun updateEquipment(equipment: Equipment){
         updateEquipmentList(equipment)
+        for(i in equipmentList){
+            println("${i.name}    ${i.level}")
+        }
         updateEquipmentInDatabase()
     }
 
-    private fun updateEquipmentList(equipment: Equipment){
+    fun updateEquipmentList(equipment: Equipment){
         equipmentList.removeAll { it.name == equipment.name }
         equipmentList.add(equipment)
     }

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.buriedtownclone.homeequipment.Equipment
-import com.example.buriedtownclone.homeequipment.Greenhouse
 import kotlinx.android.synthetic.main.fragment_equipment.*
 
 
@@ -19,11 +18,6 @@ class EquipmentFragment(private val equipment: Equipment) : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         inflated = inflater.inflate(R.layout.fragment_equipment, container, false) as ConstraintLayout
         return inflated
-    }
-
-    override fun onPause() {
-        super.onPause()
-        HomeSpot.updateEquipment(equipment)
     }
 
     override fun onResume() {

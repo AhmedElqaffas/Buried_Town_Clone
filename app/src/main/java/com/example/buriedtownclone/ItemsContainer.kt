@@ -7,11 +7,11 @@ abstract class ItemsContainer: Serializable {
     var itemsInside: LinkedListMultimap<Item, String> = LinkedListMultimap.create()
     var slots = 0
 
-    open fun decrementItemQuantity(itemIndex: Int){
-        decrementOrRemoveItem(itemIndex)
+    open fun decrementClickedItemQuantity(itemIndex: Int){
+        decrementOrRemoveClickedItem(itemIndex)
     }
 
-    private fun decrementOrRemoveItem(itemIndex: Int){
+    private fun decrementOrRemoveClickedItem(itemIndex: Int){
         val mapEntryToDecrement = itemsInside.entries()[itemIndex]
         val initialValue = mapEntryToDecrement.value.toInt()
         if(initialValue == 1){
@@ -86,6 +86,49 @@ abstract class ItemsContainer: Serializable {
 
     fun getItemAt(index: Int): Item{
         return itemsInside.entries()[index].key
+    }
+
+    /**
+     * Description: Used in upgrading equipment where I don't know where the location of the item to
+     * decrement is.
+     */
+    fun decrementMaterialsQuantity(material: MutableMap.MutableEntry<Materials, Int>) {
+        var itemQuantityRequired = material.value
+        var entryIndex = 0
+        val listOfTotallyConsumedSlotsIndices = mutableListOf<Int>()
+        loop@ for(entry in itemsInside.entries()){
+            if(entry.key.name == material.key.name){
+                when {
+                    entry.value.toInt() == itemQuantityRequired -> {
+                        listOfTotallyConsumedSlotsIndices.add(entryIndex)
+                        break@loop
+                    }
+                    entry.value.toInt() < itemQuantityRequired -> {
+                        itemQuantityRequired -= entry.value.toInt()
+                        listOfTotallyConsumedSlotsIndices.add(entryIndex)
+                    }
+                    else -> {
+                        decrementItemEntryValue(itemsInside.entries()[entryIndex], itemQuantityRequired)
+                        break@loop
+                    }
+                }
+            }
+            entryIndex++
+        }
+
+        removeTotallyConsumedSlotsEntries(listOfTotallyConsumedSlotsIndices)
+    }
+
+    private fun decrementItemEntryValue(itemEntry: MutableMap.MutableEntry<Item, String>,
+                                        quantityToRemove: Int){
+
+        val initialValue = itemEntry.value.toInt()
+        itemEntry.setValue((initialValue - quantityToRemove).toString())
+    }
+
+    private fun removeTotallyConsumedSlotsEntries(listOfTotallyConsumedSlotsIndices: MutableList<Int>) {
+        for(entryIndex in listOfTotallyConsumedSlotsIndices)
+            itemsInside.entries().removeAt(entryIndex)
     }
 
     abstract fun getClassName(): String

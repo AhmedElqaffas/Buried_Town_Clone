@@ -258,29 +258,15 @@ object Database{
             for(i in 0 until jsonObjects.length()){
                 formEquipmentObject(jsonObjects.getJSONObject(i))
             }
-
-            //for (i in 0 until names.length()) {
-
-            /*val jsonKey = names.getString(0) // retrieve exact key string from database
-            val linkedListKey = convertKeyStringToClassString(jsonKey)
-            itemsInsideMap.put(linkedListKey.newInstance() as Item,
-            json.opt(jsonKey).toString())*/
-            }
-         catch (e: Exception) {
-             println("*********************")
+        }
+        catch (e: Exception) {
             println(e.printStackTrace())
         }
     }
 
     private fun formEquipmentObject(jsonObject: JSONObject){
-
         val currentEquipment = HomeSpot.getEquipment(jsonObject.getString("name"))
         currentEquipment.level = jsonObject.getString("level").toInt()
-        /*println(equipment.toString())
-        /*equipment.name = jsonObject.getString("name")
-        equipment.level = jsonObject.getString("level").toInt()
-        equipment.description = jsonObject.getString("description")*/
-        return equipment as Equipment*/
     }
 
     fun updateSpotVisit(spot: Spot){

@@ -1,6 +1,5 @@
 package com.example.buriedtownclone.homeequipment
 
-import androidx.fragment.app.Fragment
 import com.example.buriedtownclone.*
 
 object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
@@ -8,11 +7,6 @@ object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
     /**
      * Description: Bed Can't be Upgraded
      */
-
-    override fun upgrade(): Boolean {
-        return false
-    }
-
     override fun initializeMaterialsList(materialsList: MutableList<MutableMap<Materials,Int>>?){
         materialsList?.add(0, mutableMapOf())
     }

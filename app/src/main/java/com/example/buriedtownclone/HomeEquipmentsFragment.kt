@@ -93,13 +93,4 @@ class HomeEquipmentsFragment : Fragment(){
         startActivity(intent)
     }
 
-    fun saveEquipment(){
-        //homeSpot.updateEquipmentInDatabase()
-    }
-
-
-
-
-
-
 }
