@@ -1,21 +1,24 @@
 package com.example.buriedtownclone
 
 import android.database.Cursor
+import com.google.common.collect.LinkedListMultimap
 import java.io.Serializable
 
 /* Implements serializable to be able to send an object of this class to the inventory activity
    using the put extra, as put extra doesn't allow sending normal objects
  */
-abstract class Spot: ItemsContainer(), Serializable{
+open class Spot(override var slots: Int) : ItemsContainer, Serializable{
+    override var itemsInside: LinkedListMultimap<Item, String> = LinkedListMultimap.create()
     var spotType: String = ""
     var cityX: Int = 0
     var cityY: Int = 0
     var locationWithinCity: Int = 0
     var visited: Boolean = false
 
-    init {
-        super.slots = Definitions.numberOfSlotsInSpot
-    }
+
+    /*init {
+        super.setSlotsNumber(slots)
+    }*/
 
     fun visited(){
         if (!this.visited) {
@@ -39,6 +42,10 @@ abstract class Spot: ItemsContainer(), Serializable{
         spotType = queryRow.getString(queryRow.getColumnIndex("type"))
     }
 
-    abstract fun getActivityToOpen(): Class<Any>
-    abstract fun getActivityRequestCode(): Int
+    open fun getActivityToOpen(): Class<Any>{
+        TODO("Not yet implemented")
+    }
+    open fun getActivityRequestCode(): Int{
+        TODO("Not yet implemented")
+    }
 }

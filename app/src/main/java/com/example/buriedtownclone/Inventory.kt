@@ -1,12 +1,12 @@
 package com.example.buriedtownclone
 
+import com.google.common.collect.LinkedListMultimap
 import java.io.Serializable
 
-object Inventory : ItemsContainer(), Serializable {
+object Inventory : ItemsContainer, Serializable {
 
-    init {
-        super.slots = 15
-    }
+    override var itemsInside: LinkedListMultimap<Item, String> = LinkedListMultimap.create()
+    override var slots: Int = 15
 
     override fun getClassName(): String {
         return "Inventory"

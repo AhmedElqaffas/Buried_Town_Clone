@@ -1,5 +1,7 @@
 package com.example.buriedtownclone.homeequipment
 
+import android.content.Context
+import android.content.Intent
 import com.example.buriedtownclone.*
 import java.io.Serializable
 
@@ -25,9 +27,12 @@ abstract class Equipment(var name: String, var level: Int, var description: Stri
         return materialsList?.get(level)
     }
 
-    fun upgrade(){
+    open fun upgrade(){
         Player.consumeBuildingMaterials(materialsList?.get(level))
         upgradeLevel()
+    }
+
+    fun saveUpgrade(){
         HomeSpot.updateEquipment(this)
         Database.setInventory(Inventory.itemsInside)
     }
@@ -38,6 +43,7 @@ abstract class Equipment(var name: String, var level: Int, var description: Stri
      * For ex: index 0 represents materials needed to upgrade from level 0 to level 1
      */
     abstract fun initializeMaterialsList(materialsList:MutableList<MutableMap<Materials, Int>>?)
-    abstract fun performAction()
+    abstract fun performAction(actionButtonListener: Storage.ActionButtonListener)
     abstract fun getActionButtonImage(): Int
+    abstract fun getActivityToOpen(context: Context): Intent
 }

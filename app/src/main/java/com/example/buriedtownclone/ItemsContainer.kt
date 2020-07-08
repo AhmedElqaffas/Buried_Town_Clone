@@ -3,11 +3,11 @@ package com.example.buriedtownclone
 import com.google.common.collect.LinkedListMultimap
 import java.io.Serializable
 
-abstract class ItemsContainer: Serializable {
-    var itemsInside: LinkedListMultimap<Item, String> = LinkedListMultimap.create()
-    var slots = 0
+interface ItemsContainer: Serializable {
+    var itemsInside: LinkedListMultimap<Item, String>// = LinkedListMultimap.create()
+    var slots: Int// = 0
 
-    open fun decrementClickedItemQuantity(itemIndex: Int){
+    fun decrementClickedItemQuantity(itemIndex: Int){
         decrementOrRemoveClickedItem(itemIndex)
     }
 
@@ -22,7 +22,7 @@ abstract class ItemsContainer: Serializable {
         }
     }
 
-    open fun addItem(item: Item): Boolean{
+    fun addItem(item: Item): Boolean{
         if(uniqueItem(item) && existsSpaceForItem()){
             itemsInside.put(item, "1")
             return true
@@ -131,5 +131,9 @@ abstract class ItemsContainer: Serializable {
             itemsInside.entries().removeAt(entryIndex)
     }
 
-    abstract fun getClassName(): String
+    /*fun setSlotsNumber(slots: Int){
+        this.slots = slots
+    }*/
+
+    fun getClassName(): String
 }

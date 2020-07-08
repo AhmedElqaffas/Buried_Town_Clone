@@ -1,17 +1,22 @@
 package com.example.buriedtownclone
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.buriedtownclone.homeequipment.Equipment
+import com.example.buriedtownclone.homeequipment.Storage
 
-class EquipmentActivity : AppCompatActivity() {
+class EquipmentActivity : AppCompatActivity(), Storage.ActionButtonListener {
 
     private lateinit var equipment: Equipment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_equipment)
+    }
 
+    override fun onResume() {
+        super.onResume()
         updateClassesContext()
         showStatsBarFragment()
         setupEquipmentFragment()
@@ -38,7 +43,11 @@ class EquipmentActivity : AppCompatActivity() {
     }
 
     private fun showEquipmentFragment(){
-        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, EquipmentFragment(equipment),"equipment")
+        supportFragmentManager.beginTransaction().replace(R.id.equipmentContainer, EquipmentFragment(equipment, this),"equipment")
             .commit()
+    }
+
+    override fun actionButtonFeedback(equipment: Equipment) {
+        startActivity(equipment.getActivityToOpen(this))
     }
 }

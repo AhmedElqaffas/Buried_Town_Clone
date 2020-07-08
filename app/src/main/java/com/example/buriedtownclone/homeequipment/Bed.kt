@@ -1,5 +1,7 @@
 package com.example.buriedtownclone.homeequipment
 
+import android.content.Context
+import android.content.Intent
 import com.example.buriedtownclone.*
 
 object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
@@ -15,8 +17,12 @@ object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
         return R.drawable.sleep
     }
 
-    override fun performAction(){
+    override fun performAction(actionButtonListener: Storage.ActionButtonListener){
         updatePlayerStats()
+    }
+
+    override fun getActivityToOpen(context: Context): Intent {
+        TODO ("Implement Another Activity if needed")
     }
 
     private fun updatePlayerStats(){
@@ -24,4 +30,5 @@ object Bed: Equipment("Bed", 1, Definitions.bedDescription) {
         Player.updateThirst(-10)
         Player.updateHunger(-7)
     }
+
 }

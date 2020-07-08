@@ -3,6 +3,7 @@ package com.example.buriedtownclone
 import android.app.Activity
 import android.content.Intent
 import com.example.buriedtownclone.homeequipment.Greenhouse
+import com.example.buriedtownclone.homeequipment.Storage
 
 object GameHandler{
 
@@ -32,6 +33,15 @@ object GameHandler{
         VisualsUpdater.activity = null
         TimeHandler.context = null
         VisualsUpdater.dialogFragmentContainer = null
+        resetSingletonsData()
+    }
+
+    private fun resetSingletonsData(){
+        resetEquipments()
+    }
+
+    private fun resetEquipments(){
         Greenhouse.reset()
+        Storage.reset()
     }
 }

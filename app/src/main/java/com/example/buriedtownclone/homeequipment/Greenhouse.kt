@@ -1,5 +1,7 @@
 package com.example.buriedtownclone.homeequipment
 
+import android.content.Context
+import android.content.Intent
 import com.example.buriedtownclone.*
 
 object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription) {
@@ -16,16 +18,17 @@ object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription)
         materialsList?.add(4, mutableMapOf(Wood() to 75, Nail() to 80))
     }
 
-    /*override fun upgrade(): Boolean {
-            return true
-    }*/
-
-    private fun materialsEnough(): Boolean{
-        return true
+    override fun performAction(actionButtonListener: Storage.ActionButtonListener){
+        actionButtonListener.actionButtonFeedback(this)
     }
 
-    override fun performAction(){
-        TODO("Not yet implemented")
+    override fun getActivityToOpen(context: Context): Intent {
+        TODO("Implement Another Activity If Needed")
+    }
+
+    override fun upgrade() {
+        super.upgrade()
+        saveUpgrade()
     }
 
     fun reset(){

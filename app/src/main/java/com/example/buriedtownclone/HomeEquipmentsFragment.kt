@@ -54,6 +54,9 @@ class HomeEquipmentsFragment : Fragment(){
             doColorsMatch(Color.WHITE, touchColor) -> {
                 handleBedClicked()
             }
+            doColorsMatch(Color.parseColor("#707070"), touchColor) -> {
+                handleStorageClicked()
+            }
             else -> {
                 println("None")
             }
@@ -90,6 +93,12 @@ class HomeEquipmentsFragment : Fragment(){
     private fun handleBedClicked(){
         val intent = Intent(context, EquipmentActivity::class.java)
         intent.putExtra("equipment", HomeSpot.getEquipment("Bed"))
+        startActivity(intent)
+    }
+
+    private fun handleStorageClicked(){
+        val intent = Intent(context, EquipmentActivity::class.java)
+        intent.putExtra("equipment", HomeSpot.getEquipment("Storage"))
         startActivity(intent)
     }
 

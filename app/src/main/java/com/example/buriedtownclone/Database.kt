@@ -4,8 +4,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.buriedtownclone.homeequipment.Equipment
-import com.example.buriedtownclone.homeequipment.Greenhouse
-import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.LinkedListMultimap
 import com.google.gson.Gson
 import org.json.JSONArray
@@ -67,6 +65,7 @@ object Database{
     }
     private fun createHomeSpotTable(){
         database.execSQL("CREATE TABLE IF NOT EXISTS home(type_home VARCHAR(50), equipment TEXT, " +
+                "slots TINYINT,"+
                 "CONSTRAINT pk PRIMARY KEY (type_home), " +
                 "CONSTRAINT home_foreign_key FOREIGN KEY (type_home) REFERENCES spots(type))")
     }
@@ -211,7 +210,7 @@ object Database{
     private fun addHomeDetails(homeSpot: HomeSpot){
         val serializedEquipmentList = serializeEquipmentList()
         database.execSQL("INSERT INTO home values('${homeSpot.spotType}'," +
-                "'${serializedEquipmentList}')")
+                "'${serializedEquipmentList}', '${homeSpot.slots}')")
     }
     private fun serializeItemMap(itemMap: LinkedListMultimap<Item, String>): String{
         val serializedMap = linkedMapOf<String?, String?>()
@@ -243,6 +242,7 @@ object Database{
     fun getHomeEquipment(){
         val equipmentQueryResult = database.rawQuery(getEquipmentQuery(), null)
         unserializeEquipmentList(equipmentQueryResult)
+        getHomeSlotsNumber()
     }
     
     private fun getEquipmentQuery(): String{
@@ -269,6 +269,16 @@ object Database{
         currentEquipment.level = jsonObject.getString("level").toInt()
     }
 
+    private fun getHomeSlotsNumber() {
+        val slotsQueryResult = database.rawQuery(getHomeSlotsQuery(), null)
+        slotsQueryResult.moveToFirst()
+        HomeSpot.slots = slotsQueryResult.getInt(slotsQueryResult.getColumnIndex("slots"))
+    }
+
+    private fun getHomeSlotsQuery(): String{
+        return "SELECT slots FROM home"
+    }
+
     fun updateSpotVisit(spot: Spot){
         database.execSQL("UPDATE spots SET visited = 1 " +
                 "WHERE index_within_city = ${spot.locationWithinCity}" +
@@ -279,6 +289,10 @@ object Database{
         database.execSQL("UPDATE spots SET inner_items_map = '${serializedItemsMap}' " +
                 "WHERE index_within_city = ${spot.locationWithinCity}" +
                 " and city_x = ${spot.cityX} and city_y = ${spot.cityY}")
+    }
+
+    fun updateHomeStorageSlots(slots: Int){
+        database.execSQL("UPDATE home SET slots = $slots")
     }
 
     fun setHP(value: Int){

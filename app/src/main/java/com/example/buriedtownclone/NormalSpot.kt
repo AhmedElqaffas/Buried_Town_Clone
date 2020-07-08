@@ -1,6 +1,6 @@
 package com.example.buriedtownclone
 
-class NormalSpot: Spot() {
+class NormalSpot: Spot(Definitions.numberOfSlotsInSpot) {
 
     override fun saveInDatabase() {
         Database.saveSpot(this)

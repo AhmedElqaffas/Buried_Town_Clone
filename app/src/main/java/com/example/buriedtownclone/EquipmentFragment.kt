@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.buriedtownclone.homeequipment.Equipment
+import com.example.buriedtownclone.homeequipment.Storage
 import kotlinx.android.synthetic.main.fragment_equipment.*
 
 
-class EquipmentFragment(private val equipment: Equipment) : Fragment() {
+class EquipmentFragment(private val equipment: Equipment, private val actionButtonListener: Storage.ActionButtonListener) : Fragment() {
 
     private lateinit var inflated: ConstraintLayout
 
@@ -60,7 +61,7 @@ class EquipmentFragment(private val equipment: Equipment) : Fragment() {
     }
 
     private fun actionButtonClicked(){
-        equipment.performAction()
+        equipment.performAction(actionButtonListener)
     }
 
 }

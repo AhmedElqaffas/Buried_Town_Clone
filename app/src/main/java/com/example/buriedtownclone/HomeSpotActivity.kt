@@ -2,6 +2,7 @@ package com.example.buriedtownclone
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.buriedtownclone.homeequipment.Storage
 import kotlinx.android.synthetic.main.activity_home_spot.*
 
 class HomeSpotActivity : AppCompatActivity() {
@@ -53,7 +54,8 @@ class HomeSpotActivity : AppCompatActivity() {
     }
 
     private fun addPistolToInventory(){
-        Player.addToInventory(Pistol(), "1")
+        HomeSpot.addItem(Pistol())
+        Database.updateSpotItems(HomeSpot)
     }
 
     private fun showHomeEquipmentFragment(){

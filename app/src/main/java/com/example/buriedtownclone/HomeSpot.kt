@@ -3,10 +3,11 @@ package com.example.buriedtownclone
 import com.example.buriedtownclone.homeequipment.Bed
 import com.example.buriedtownclone.homeequipment.Equipment
 import com.example.buriedtownclone.homeequipment.Greenhouse
+import com.example.buriedtownclone.homeequipment.Storage
 
-object HomeSpot: Spot() {
+object HomeSpot: Spot(5) {
 
-    val equipmentList: MutableList<Equipment> = mutableListOf(Greenhouse, Bed)
+    val equipmentList: MutableList<Equipment> = mutableListOf(Greenhouse, Bed, Storage)
 
     override fun saveInDatabase() {
         Database.saveHomeSpot(this)
@@ -14,9 +15,6 @@ object HomeSpot: Spot() {
 
     fun updateEquipment(equipment: Equipment){
         updateEquipmentList(equipment)
-        for(i in equipmentList){
-            println("${i.name}    ${i.level}")
-        }
         updateEquipmentInDatabase()
     }
 
@@ -44,4 +42,14 @@ object HomeSpot: Spot() {
     fun getEquipment(name: String): Equipment{
         return equipmentList.single { it.name == name }
     }
+
+    fun updateSlots(number: Int){
+        slots = number
+        updateSlotsInDatabase()
+    }
+
+    private fun updateSlotsInDatabase(){
+        Database.updateHomeStorageSlots(slots)
+    }
+
 }

@@ -9,7 +9,7 @@ public final class Definitions {
     static String home = "home";
     static int homeX = 0;
     static int homeY = 0;
-    static String spotItems = "spot";
+    public static String spotItems = "spot";
     static String inventoryItems = "inventory";
     static String mm9 = "9mm";
     static String apple = "Apples";
