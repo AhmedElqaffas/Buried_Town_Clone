@@ -31,6 +31,7 @@ object Database{
         createCitiesTable()
         createSpotsTable()
         createHomeSpotTable()
+        createTimestampsTable()
     }
     private fun createStatsTable(){
         database.execSQL("CREATE TABLE IF NOT EXISTS stats(stat VARCHAR(50), " +
@@ -69,6 +70,10 @@ object Database{
                 "CONSTRAINT pk PRIMARY KEY (type_home), " +
                 "CONSTRAINT home_foreign_key FOREIGN KEY (type_home) REFERENCES spots(type))")
     }
+    private fun createTimestampsTable(){
+        database.execSQL("CREATE TABLE IF NOT EXISTS timestamps(name VARCHAR(50), time INT, " +
+                "CONSTRAINT pk PRIMARY KEY (name))")
+    }
     private fun getQuantityQuery(tableName: String, selected: String, selector: String): String{
         return "SELECT quantity FROM $tableName WHERE $selector='$selected'"
     }
@@ -82,6 +87,7 @@ object Database{
         database.execSQL("DELETE FROM cities")
         database.execSQL("DELETE FROM spots")
         database.execSQL("DELETE FROM home")
+        database.execSQL("DELETE FROM timestamps")
     }
 
     fun initializeStats(){
@@ -91,6 +97,11 @@ object Database{
         database.execSQL("INSERT INTO stats values('x_position','0')")
         database.execSQL("INSERT INTO stats values('y_position','0')")
         database.execSQL("Insert Into stats values('inventory','')")
+    }
+
+    fun initializeTimestamps(){
+        val currentTimestamp = System.currentTimeMillis()
+        database.execSQL("INSERT INTO timestamps values('greenhouse','$currentTimestamp')" )
     }
 
     fun getHealthPoints(): Int?{
@@ -389,6 +400,20 @@ object Database{
         database.execSQL("DROP TABLE cities")
         database.execSQL("DROP TABLE spots")
 
+    }
+
+    fun getTimestamp(name: String): Long {
+        val timeQueryResult: Cursor = database.rawQuery(getTimestampQuery(name), null)
+        timeQueryResult.apply { moveToFirst() }
+            .also { return it.getLong(0)  }
+    }
+
+    private fun getTimestampQuery(name: String): String{
+        return "SELECT time FROM timestamps WHERE name = '$name'"
+    }
+
+    fun updateTimestamp(name: String, time: Long) {
+        database.execSQL("UPDATE timestamps SET time = $time WHERE name = '$name'")
     }
 
 }

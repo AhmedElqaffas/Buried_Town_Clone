@@ -74,6 +74,7 @@ class GameActivity : AppCompatActivity() {
     private fun initializeGameData(){
         Database.deleteAllData()
         Database.initializeStats()
+        Database.initializeTimestamps()
     }
 
     private fun refreshClassVariables(){

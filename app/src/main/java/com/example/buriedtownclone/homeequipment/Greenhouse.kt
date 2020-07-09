@@ -23,7 +23,7 @@ object Greenhouse: Equipment("Greenhouse", 1, Definitions.greenhouseDescription)
     }
 
     override fun getActivityToOpen(context: Context): Intent {
-        TODO("Implement Another Activity If Needed")
+        return Intent(context, GreenhouseActivity::class.java)
     }
 
     override fun upgrade() {

@@ -16,9 +16,7 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_spot)
 
-        VisualsUpdater.activity = this
-        GameHandler.context = this
-        TimeHandler.context = this
+        updateClassesContext()
         showStatsBarFragment()
         manageSpot()
         showInventoryHelperFragment()
@@ -34,6 +32,12 @@ class SpotActivity : AppCompatActivity(), ItemsFragment.ItemActionDecider {
         intent.putExtra(Definitions.spotItems, getClickedSpotObject())
         setResult(RESULT_OK, intent)
         finish()
+    }
+
+    private fun updateClassesContext(){
+        VisualsUpdater.activity = this
+        GameHandler.context = this
+        TimeHandler.context = this
     }
 
     private fun showStatsBarFragment(){

@@ -39,9 +39,6 @@ class HomeEquipmentsFragment : Fragment(){
             checkClickedColor(eventX, eventY)
         }
 
-        if(action == MotionEvent.ACTION_UP){
-            println("Action up")
-        }
         return true
     }
 
@@ -56,9 +53,6 @@ class HomeEquipmentsFragment : Fragment(){
             }
             doColorsMatch(Color.parseColor("#707070"), touchColor) -> {
                 handleStorageClicked()
-            }
-            else -> {
-                println("None")
             }
         }
     }
